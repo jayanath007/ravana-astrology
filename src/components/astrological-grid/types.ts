@@ -1,3 +1,5 @@
+import type { ZodiacSign } from './zodiac-config';
+
 export type ShapeType = 'triangle' | 'square' | 'rectangle';
 
 export interface GridState {
@@ -12,4 +14,5 @@ export interface AreaConfig {
   width?: number;
   height?: number;
   isCenter?: boolean;
+  zodiacSign?: ZodiacSign;
 }

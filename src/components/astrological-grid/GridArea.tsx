@@ -29,7 +29,7 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
     'transition-all duration-200',
     isHovered && !config.isCenter ? 'stroke-[3]' : 'stroke-2',
     config.isCenter
-      ? 'fill-amber-200 dark:fill-amber-800 stroke-amber-600 dark:stroke-amber-400'
+      ? 'fill-neutral-100 dark:fill-neutral-800 stroke-neutral-400 dark:stroke-neutral-600'
       : cn(
           'stroke-neutral-400 dark:stroke-neutral-600',
           hasLetters
@@ -86,6 +86,89 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
       <g>
         {renderShape()}
 
+        {/* Zodiac sign - rendered below text */}
+        {config.zodiacSign && (
+          <>
+            {config.zodiacSign.svgPath ? (
+              // Inline SVG with path data and dynamic colors
+              <>
+                {/* Light mode SVG */}
+                <svg
+                  x={config.position.x - 17.5}
+                  y={config.position.y - 17.5}
+                  width={35}
+                  height={35}
+                  viewBox={config.zodiacSign.svgViewBox || '0 0 100 100'}
+                  preserveAspectRatio="xMidYMid meet"
+                  overflow="visible"
+                  className="pointer-events-none select-none dark:hidden"
+                >
+                  <path
+                    fill={config.zodiacSign.color}
+                    d={config.zodiacSign.svgPath}
+                  />
+                </svg>
+
+                {/* Dark mode SVG */}
+                <svg
+                  x={config.position.x - 17.5}
+                  y={config.position.y - 17.5}
+                  width={35}
+                  height={35}
+                  viewBox={config.zodiacSign.svgViewBox || '0 0 100 100'}
+                  preserveAspectRatio="xMidYMid meet"
+                  overflow="visible"
+                  className="pointer-events-none select-none hidden dark:block"
+                >
+                  <path
+                    fill={config.zodiacSign.darkColor}
+                    d={config.zodiacSign.svgPath}
+                  />
+                </svg>
+              </>
+            ) : config.zodiacSign.imageUrl ? (
+              // Use image if imageUrl is provided (configurable for future)
+              <image
+                href={config.zodiacSign.imageUrl}
+                x={config.position.x - 30}
+                y={config.position.y - 30}
+                width={60}
+                height={60}
+                opacity={0.15}
+                className="pointer-events-none select-none"
+              />
+            ) : (
+              // Use Unicode symbol as fallback watermark with unique color per sign
+              <>
+                {/* Light mode watermark */}
+                <text
+                  x={config.position.x}
+                  y={config.position.y}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  className="pointer-events-none select-none text-5xl dark:hidden"
+                  style={{ fill: config.zodiacSign.color }}
+                  opacity={0.25}
+                >
+                  {config.zodiacSign.symbol}
+                </text>
+                {/* Dark mode watermark */}
+                <text
+                  x={config.position.x}
+                  y={config.position.y}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  className="pointer-events-none select-none text-5xl hidden dark:block"
+                  style={{ fill: config.zodiacSign.darkColor }}
+                  opacity={0.25}
+                >
+                  {config.zodiacSign.symbol}
+                </text>
+              </>
+            )}
+          </>
+        )}
+
         {/* Display area ID number for non-center areas */}
         {!config.isCenter && (
           <text
@@ -107,9 +190,9 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
             textAnchor="middle"
             dominantBaseline="central"
             className={cn(
-              'pointer-events-none font-bold select-none',
+              'pointer-events-none font-semibold select-none',
               config.isCenter
-                ? 'text-5xl fill-amber-900 dark:fill-amber-100'
+                ? 'text-sm fill-neutral-500 dark:fill-neutral-400'
                 : 'text-base fill-neutral-900 dark:fill-neutral-100'
             )}
           >
