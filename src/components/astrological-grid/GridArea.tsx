@@ -47,7 +47,7 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
           onMouseLeave={() => !config.isCenter && setIsHovered(false)}
           onClick={handleClick}
           role={config.isCenter ? undefined : 'button'}
-          aria-label={config.isCenter ? 'Center area with M' : `Area ${config.id}${letter ? `: ${letter}` : ''}`}
+          aria-label={config.isCenter ? 'Center area with 0' : `Area ${config.id}${letter ? `: ${letter}` : ''}`}
         />
       );
     } else {
@@ -66,13 +66,13 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
           onMouseLeave={() => !config.isCenter && setIsHovered(false)}
           onClick={handleClick}
           role={config.isCenter ? undefined : 'button'}
-          aria-label={config.isCenter ? 'Center area with M' : `Area ${config.id}${letter ? `: ${letter}` : ''}`}
+          aria-label={config.isCenter ? 'Center area with 0' : `Area ${config.id}${letter ? `: ${letter}` : ''}`}
         />
       );
     }
   };
 
-  const displayLetter = config.isCenter ? 'M' : letter;
+  const displayLetter = config.isCenter ? config.id.toString() : letter;
 
   return (
     <>

@@ -3,14 +3,14 @@ import type { AreaConfig } from './types';
 // Grid is 300x300 viewBox, divided into 3x3 grid (100x100 cells)
 // Each cell can contain triangles or squares
 export const GRID_CONFIG: AreaConfig[] = [
-  // Area 1 - Rectangle (top-center, spans 2 rows)
+  // Area 1 - Square (top-center)
   {
     id: 1,
-    shape: 'rectangle',
-    points: '', // Will use rect element
-    position: { x: 150, y: 67 }, // Center of rectangle
+    shape: 'square',
+    points: '',
+    position: { x: 150, y: 33.5 },
     width: 100,
-    height: 134,
+    height: 100,
   },
 
   // Area 2 - Triangle (top-left, upper triangle)
@@ -34,9 +34,9 @@ export const GRID_CONFIG: AreaConfig[] = [
     id: 4,
     shape: 'square',
     points: '',
-    position: { x: 50, y: 117 },
+    position: { x: 50, y: 133.5 },
     width: 100,
-    height: 66,
+    height: 100,
   },
 
   // Area 5 - Triangle (bottom-left, upper triangle)
@@ -55,14 +55,14 @@ export const GRID_CONFIG: AreaConfig[] = [
     position: { x: 33, y: 278 }, // Centroid
   },
 
-  // Area 7 - Square (bottom-center, spans 2 rows)
+  // Area 7 - Square (bottom-center)
   {
     id: 7,
     shape: 'square',
     points: '',
-    position: { x: 150, y: 233 },
+    position: { x: 150, y: 233.5 },
     width: 100,
-    height: 134,
+    height: 100,
   },
 
   // Area 8 - Triangle (bottom-right, lower triangle)
@@ -86,9 +86,9 @@ export const GRID_CONFIG: AreaConfig[] = [
     id: 10,
     shape: 'square',
     points: '',
-    position: { x: 250, y: 117 },
+    position: { x: 250, y: 133.5 },
     width: 100,
-    height: 66,
+    height: 100,
   },
 
   // Area 11 - Triangle (top-right, lower triangle)
@@ -107,14 +107,14 @@ export const GRID_CONFIG: AreaConfig[] = [
     position: { x: 233, y: 22 }, // Centroid
   },
 
-  // Center - Fixed 'M' (non-interactive)
+  // Center - Fixed '0' (non-interactive)
   {
     id: 0,
     shape: 'square',
     points: '',
-    position: { x: 150, y: 150 },
+    position: { x: 150, y: 133.5 },
     width: 100,
-    height: 66,
+    height: 100,
     isCenter: true,
   },
 ];
