@@ -10,7 +10,8 @@
       "Bash(npm run build:*)",
       "Bash(npm run dev:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: Interactive Astrological Grid\n\n- Implement 12-area grid with SVG shapes \\(triangles, squares, rectangles\\)\n- Add fixed center area displaying ''M''\n- Implement hover highlights and click interactions\n- Add letter picker \\(A-Z\\) using shadcn/ui Popover\n- Display area ID numbers in each shape\n- Setup Tailwind CSS and shadcn/ui components\n- Add dark mode support\n- Responsive design with React 19.2 + TypeScript + Vite\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }

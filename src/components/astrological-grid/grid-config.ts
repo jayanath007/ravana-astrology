@@ -43,18 +43,16 @@ export const GRID_CONFIG: AreaConfig[] = [
   {
     id: 5,
     shape: 'triangle',
-    points: '0,183 100,183 0,233',
-    position: { x: 33, y: 200 }, // Centroid
+    points: '0,233 100,233 100,300',
+    position: { x: 67, y: 255 }, // Centroid
   },
 
-  // Area 6 - Square (bottom-left, lower square)
+  // Area 6 - Triangle (bottom-left, lower triangle)
   {
     id: 6,
-    shape: 'square',
-    points: '',
-    position: { x: 50, y: 267 },
-    width: 100,
-    height: 67,
+    shape: 'triangle',
+    points: '0,233 0,300 100,300',
+    position: { x: 33, y: 278 }, // Centroid
   },
 
   // Area 7 - Square (bottom-center, spans 2 rows)
@@ -67,22 +65,20 @@ export const GRID_CONFIG: AreaConfig[] = [
     height: 134,
   },
 
-  // Area 8 - Square (bottom-right, lower square)
+  // Area 8 - Triangle (bottom-right, lower triangle)
   {
     id: 8,
-    shape: 'square',
-    points: '',
-    position: { x: 250, y: 267 },
-    width: 100,
-    height: 67,
+    shape: 'triangle',
+    points: '300,233 200,300 300,300',
+    position: { x: 267, y: 278 }, // Centroid
   },
 
   // Area 9 - Triangle (bottom-right, upper triangle)
   {
     id: 9,
     shape: 'triangle',
-    points: '300,183 200,233 300,233',
-    position: { x: 267, y: 216 }, // Centroid
+    points: '200,233 300,233 200,300',
+    position: { x: 233, y: 255 }, // Centroid
   },
 
   // Area 10 - Square (middle-right)
