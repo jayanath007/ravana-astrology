@@ -1,7 +1,7 @@
 export type ShapeType = 'triangle' | 'square' | 'rectangle';
 
 export interface GridState {
-  [areaId: number]: string | null; // areaId -> letter mapping
+  [areaId: number]: string[]; // areaId -> array of letters mapping
 }
 
 export interface AreaConfig {

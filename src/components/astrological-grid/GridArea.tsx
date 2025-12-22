@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 interface GridAreaProps {
   config: AreaConfig;
-  letter: string | null;
+  letter: string[];
   onLetterSelect: (areaId: number, letter: string | null) => void;
 }
 
@@ -23,16 +23,19 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
     onLetterSelect(config.id, selectedLetter);
   };
 
+  const hasLetters = letter.length > 0;
+
   const shapeClasses = cn(
-    'transition-all duration-200 stroke-2',
+    'transition-all duration-200',
+    isHovered && !config.isCenter ? 'stroke-[3]' : 'stroke-2',
     config.isCenter
       ? 'fill-amber-200 dark:fill-amber-800 stroke-amber-600 dark:stroke-amber-400'
       : cn(
           'stroke-neutral-400 dark:stroke-neutral-600',
-          letter
+          hasLetters
             ? 'fill-blue-100 dark:fill-blue-900'
             : 'fill-neutral-100 dark:fill-neutral-800',
-          isHovered && !config.isCenter && 'fill-neutral-200 dark:fill-neutral-700 stroke-neutral-600 dark:stroke-neutral-400',
+          isHovered && !config.isCenter && 'fill-neutral-200 dark:fill-neutral-700 stroke-neutral-800 dark:stroke-neutral-300',
           !config.isCenter && 'cursor-pointer'
         )
   );
@@ -43,11 +46,13 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
         <polygon
           points={config.points}
           className={shapeClasses}
+          strokeLinejoin="miter"
+          strokeLinecap="square"
           onMouseEnter={() => !config.isCenter && setIsHovered(true)}
           onMouseLeave={() => !config.isCenter && setIsHovered(false)}
           onClick={handleClick}
           role={config.isCenter ? undefined : 'button'}
-          aria-label={config.isCenter ? 'Center area with 0' : `Area ${config.id}${letter ? `: ${letter}` : ''}`}
+          aria-label={config.isCenter ? 'Center area with 0' : `Area ${config.id}${hasLetters ? `: ${letter.join('')}` : ''}`}
         />
       );
     } else {
@@ -62,17 +67,19 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
           width={config.width || 100}
           height={config.height || 100}
           className={shapeClasses}
+          strokeLinejoin="miter"
+          strokeLinecap="square"
           onMouseEnter={() => !config.isCenter && setIsHovered(true)}
           onMouseLeave={() => !config.isCenter && setIsHovered(false)}
           onClick={handleClick}
           role={config.isCenter ? undefined : 'button'}
-          aria-label={config.isCenter ? 'Center area with 0' : `Area ${config.id}${letter ? `: ${letter}` : ''}`}
+          aria-label={config.isCenter ? 'Center area with 0' : `Area ${config.id}${hasLetters ? `: ${letter.join('')}` : ''}`}
         />
       );
     }
   };
 
-  const displayLetter = config.isCenter ? config.id.toString() : letter;
+  const displayLetters = config.isCenter ? config.id.toString() : letter.join('');
 
   return (
     <>
@@ -83,7 +90,7 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
         {!config.isCenter && (
           <text
             x={config.position.x}
-            y={letter ? config.position.y - 12 : config.position.y}
+            y={hasLetters ? config.position.y - 12 : config.position.y}
             textAnchor="middle"
             dominantBaseline="central"
             className="pointer-events-none font-semibold select-none text-sm fill-neutral-500 dark:fill-neutral-400"
@@ -92,21 +99,21 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
           </text>
         )}
 
-        {/* Display letter or 'M' for center */}
-        {displayLetter && (
+        {/* Display letters or ID for center */}
+        {(hasLetters || config.isCenter) && (
           <text
             x={config.position.x}
-            y={config.isCenter ? config.position.y : config.position.y + 12}
+            y={config.isCenter ? config.position.y : config.position.y + 10}
             textAnchor="middle"
             dominantBaseline="central"
             className={cn(
               'pointer-events-none font-bold select-none',
               config.isCenter
                 ? 'text-5xl fill-amber-900 dark:fill-amber-100'
-                : 'text-4xl fill-neutral-900 dark:fill-neutral-100'
+                : 'text-base fill-neutral-900 dark:fill-neutral-100'
             )}
           >
-            {displayLetter}
+            {displayLetters}
           </text>
         )}
       </g>
@@ -115,7 +122,7 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
         <LetterPicker
           open={isPickerOpen}
           onOpenChange={setIsPickerOpen}
-          currentLetter={letter}
+          currentLetters={letter}
           onSelect={handleLetterSelect}
         >
           <button

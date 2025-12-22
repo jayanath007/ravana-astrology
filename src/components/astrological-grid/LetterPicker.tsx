@@ -7,7 +7,7 @@ import {
 
 interface LetterPickerProps {
   children: React.ReactNode;
-  currentLetter: string | null;
+  currentLetters: string[];
   onSelect: (letter: string | null) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -17,7 +17,7 @@ const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
 export function LetterPicker({
   children,
-  currentLetter,
+  currentLetters,
   onSelect,
   open,
   onOpenChange,
@@ -32,11 +32,10 @@ export function LetterPicker({
           {LETTERS.map((letter) => (
             <Button
               key={letter}
-              variant={currentLetter === letter ? 'default' : 'outline'}
+              variant={currentLetters.includes(letter) ? 'default' : 'outline'}
               size="sm"
               onClick={() => {
                 onSelect(letter);
-                onOpenChange(false);
               }}
               className="aspect-square p-0"
             >
@@ -52,7 +51,7 @@ export function LetterPicker({
             }}
             className="col-span-7"
           >
-            Clear
+            Clear All
           </Button>
         </div>
       </PopoverContent>
