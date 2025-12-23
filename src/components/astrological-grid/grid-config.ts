@@ -13,7 +13,6 @@ export const GRID_CONFIG: AreaConfig[] = [
     position: { x: 150, y: 50 },
     width: 100,
     height: 100,
-    zodiacSign: getZodiacSignByAreaId(1),
   },
 
   // Area 2 - Triangle (top-left upper, row 1 col 1)
@@ -21,8 +20,7 @@ export const GRID_CONFIG: AreaConfig[] = [
     id: 2,
     shape: 'triangle',
     points: '0,0 100,0 100,100',
-    position: { x: 67, y: 23 }, // Centroid
-    zodiacSign: getZodiacSignByAreaId(2),
+    position: { x: 67, y: 30 }, // Centroid
   },
 
   // Area 3 - Triangle (top-left lower, row 1 col 1)
@@ -30,8 +28,7 @@ export const GRID_CONFIG: AreaConfig[] = [
     id: 3,
     shape: 'triangle',
     points: '0,0 0,100 100,100',
-    position: { x: 23, y: 67 }, // Centroid
-    zodiacSign: getZodiacSignByAreaId(3),
+    position: { x: 30, y: 67 }, // Centroid
   },
 
   // Area 4 - Square (middle-left, row 2 col 1)
@@ -42,7 +39,6 @@ export const GRID_CONFIG: AreaConfig[] = [
     position: { x: 50, y: 150 },
     width: 100,
     height: 100,
-    zodiacSign: getZodiacSignByAreaId(4),
   },
 
   // Area 5 - Triangle (bottom-left upper, row 3 col 1)
@@ -51,7 +47,6 @@ export const GRID_CONFIG: AreaConfig[] = [
     shape: 'triangle',
     points: '0,300 100,200  100,300',
     position: { x: 67, y: 267 }, // Centroid
-    zodiacSign: getZodiacSignByAreaId(5),
   },
 
   // Area 6 - Triangle (bottom-left lower, row 3 col 1)
@@ -59,8 +54,7 @@ export const GRID_CONFIG: AreaConfig[] = [
     id: 6,
     shape: 'triangle',
     points: '0,300 0,200 100,200',
-    position: { x: 23, y: 223 }, // Centroid
-    zodiacSign: getZodiacSignByAreaId(6),
+    position: { x: 30, y: 225 }, // Centroid
   },
 
   // Area 7 - Square (bottom-center, row 3 col 2)
@@ -71,7 +65,6 @@ export const GRID_CONFIG: AreaConfig[] = [
     position: { x: 150, y: 250 },
     width: 100,
     height: 100,
-    zodiacSign: getZodiacSignByAreaId(7),
   },
 
    // Area 8 - Triangle (bottom-right lower, row 3 col 3)
@@ -79,8 +72,7 @@ export const GRID_CONFIG: AreaConfig[] = [
     id: 8,
     shape: 'triangle',
     points: '200,200 200,300 300,300',
-    position: { x: 223, y: 267 }, // Centroid
-    zodiacSign: getZodiacSignByAreaId(8),
+    position: { x: 225, y: 267 }, // Centroid
   },
 
   // Area 9 - Triangle (bottom-right upper, row 3 col 3)
@@ -88,8 +80,7 @@ export const GRID_CONFIG: AreaConfig[] = [
     id: 9,
     shape: 'triangle',
     points: '200,200 300,200 300,300',
-    position: { x: 267, y: 223 }, // Centroid
-    zodiacSign: getZodiacSignByAreaId(9),
+    position: { x: 267, y: 225 }, // Centroid
   },
 
 
@@ -103,7 +94,7 @@ export const GRID_CONFIG: AreaConfig[] = [
     position: { x: 250, y: 150 },
     width: 100,
     height: 100,
-    zodiacSign: getZodiacSignByAreaId(10),
+   
   },
 
   // Area 11 - Triangle (top-right lower, row 1 col 3)
@@ -112,7 +103,7 @@ export const GRID_CONFIG: AreaConfig[] = [
     shape: 'triangle',
     points: '300,0 200,100 300,100',
     position: { x: 267, y: 67 }, // Centroid
-    zodiacSign: getZodiacSignByAreaId(11),
+ 
   },
 
   // Area 12 - Triangle (top-right upper, row 1 col 3)
@@ -120,19 +111,17 @@ export const GRID_CONFIG: AreaConfig[] = [
     id: 12,
     shape: 'triangle',
     points: '200,0 300,0 200,100',
-    position: { x: 223, y: 23 }, // Centroid
-    zodiacSign: getZodiacSignByAreaId(12),
+    position: { x: 225, y: 30 }, // Centroid
   },
 
   // Center - Fixed '0' (non-interactive, row 2 col 2)
   {
-    id: 0,
+    id: 13,
     shape: 'square',
     points: '',
     position: { x: 150, y: 150 },
     width: 100,
     height: 100,
     isCenter: true,
-    zodiacSign: getZodiacSignByAreaId(1),
   },
 ];

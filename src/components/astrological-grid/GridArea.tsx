@@ -1,17 +1,28 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { AreaConfig } from './types';
 import { LetterPicker } from './LetterPicker';
 import { cn } from '@/lib/utils';
+import { getZodiacSignByAreaId } from './zodiac-config';
 
 interface GridAreaProps {
   config: AreaConfig;
   letter: string[];
   onLetterSelect: (areaId: number, letter: string | null) => void;
+  offsetValue: number;
 }
 
-export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
+export function GridArea({ config, letter, onLetterSelect, offsetValue }: GridAreaProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+
+  // Calculate zodiac sign: getZodiacSignByAreaId((x - 1) + currentValue)
+  // where x = offsetValue, currentValue = area ID (0-12)
+  const calculatedZodiacSign = useMemo(() => {
+    const signId = ((offsetValue - 1) + config.id) % 12;
+    // Handle 0 case: if result is 0, it should be 12
+    const finalSignId = signId === 0 ? 12 : signId;
+    return getZodiacSignByAreaId(finalSignId);
+  }, [offsetValue, config.id]);
 
   const handleClick = () => {
     if (!config.isCenter) {
@@ -87,9 +98,9 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
         {renderShape()}
 
         {/* Zodiac sign - rendered below text */}
-        {config.zodiacSign && (
+        {calculatedZodiacSign && (
           <>
-            {config.zodiacSign.svgPath ? (
+            {calculatedZodiacSign.svgPath ? (
               // Inline SVG with path data and dynamic colors
               <>
                 {/* Light mode SVG */}
@@ -98,14 +109,15 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
                   y={config.position.y - 17.5}
                   width={35}
                   height={35}
-                  viewBox={config.zodiacSign.svgViewBox || '0 0 100 100'}
+                  viewBox={calculatedZodiacSign.svgViewBox || '0 0 100 100'}
                   preserveAspectRatio="xMidYMid meet"
                   overflow="visible"
+                  opacity={config.isCenter ? 1 : 0.25}
                   className="pointer-events-none select-none dark:hidden"
                 >
                   <path
-                    fill={config.zodiacSign.color}
-                    d={config.zodiacSign.svgPath}
+                    fill={calculatedZodiacSign.color}
+                    d={calculatedZodiacSign.svgPath}
                   />
                 </svg>
 
@@ -115,21 +127,22 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
                   y={config.position.y - 17.5}
                   width={35}
                   height={35}
-                  viewBox={config.zodiacSign.svgViewBox || '0 0 100 100'}
+                  viewBox={calculatedZodiacSign.svgViewBox || '0 0 100 100'}
                   preserveAspectRatio="xMidYMid meet"
                   overflow="visible"
+                  opacity={config.isCenter ? 1 : 0.25}
                   className="pointer-events-none select-none hidden dark:block"
                 >
                   <path
-                    fill={config.zodiacSign.darkColor}
-                    d={config.zodiacSign.svgPath}
+                    fill={calculatedZodiacSign.darkColor}
+                    d={calculatedZodiacSign.svgPath}
                   />
                 </svg>
               </>
-            ) : config.zodiacSign.imageUrl ? (
+            ) : calculatedZodiacSign.imageUrl ? (
               // Use image if imageUrl is provided (configurable for future)
               <image
-                href={config.zodiacSign.imageUrl}
+                href={calculatedZodiacSign.imageUrl}
                 x={config.position.x - 30}
                 y={config.position.y - 30}
                 width={60}
@@ -147,10 +160,10 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
                   textAnchor="middle"
                   dominantBaseline="central"
                   className="pointer-events-none select-none text-5xl dark:hidden"
-                  style={{ fill: config.zodiacSign.color }}
+                  style={{ fill: calculatedZodiacSign.color }}
                   opacity={0.25}
                 >
-                  {config.zodiacSign.symbol}
+                  {calculatedZodiacSign.symbol}
                 </text>
                 {/* Dark mode watermark */}
                 <text
@@ -159,10 +172,10 @@ export function GridArea({ config, letter, onLetterSelect }: GridAreaProps) {
                   textAnchor="middle"
                   dominantBaseline="central"
                   className="pointer-events-none select-none text-5xl hidden dark:block"
-                  style={{ fill: config.zodiacSign.darkColor }}
+                  style={{ fill: calculatedZodiacSign.darkColor }}
                   opacity={0.25}
                 >
-                  {config.zodiacSign.symbol}
+                  {calculatedZodiacSign.symbol}
                 </text>
               </>
             )}
