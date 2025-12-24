@@ -183,19 +183,6 @@ export function GridArea({ config, letter, onLetterSelect, offsetValue, planetSi
           </>
         )}
 
-        {/* Display area ID number for non-center areas */}
-        {!config.isCenter && (
-          <text
-            x={config.position.x}
-            y={hasLetters ? config.position.y - 12 : config.position.y}
-            textAnchor="middle"
-            dominantBaseline="central"
-            className="pointer-events-none font-semibold select-none text-sm fill-neutral-500 dark:fill-neutral-400"
-          >
-            {config.id}
-          </text>
-        )}
-
         {/* Display letters/planets or ID for center */}
         {(hasLetters || config.isCenter) && (
           <>
@@ -212,27 +199,68 @@ export function GridArea({ config, letter, onLetterSelect, offsetValue, planetSi
               </text>
             ) : (
               // Non-center areas: render each planet/letter with individual color
-              letter.map((item, index) => {
-                // Find the original sign for this planet
-                const planetData = planetSigns?.find(ps => ps.planet === item);
-                const color = planetData
-                  ? getPlanetColor(item, planetData.sign)
-                  : undefined;
+              // Support up to 8 characters with multi-line layout
+              (() => {
+                const itemCount = letter.length;
 
-                return (
-                  <text
-                    key={`${item}-${index}`}
-                    x={config.position.x + (index * 15) - ((letter.length - 1) * 7.5)}
-                    y={config.position.y + 10}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    className="pointer-events-none font-semibold select-none text-base"
-                    style={{ fill: color }}
-                  >
-                    {item}
-                  </text>
-                );
-              })
+                // Determine characters per row and font size based on count
+                let charsPerRow = 3;
+                let fontSize = 'text-base'; // 16px
+                let lineHeight = 18;
+                let charSpacing = 18;
+
+                if (itemCount <= 3) {
+                  charsPerRow = 3;
+                  fontSize = 'text-base';
+                  lineHeight = 18;
+                  charSpacing = 18;
+                } else if (itemCount <= 6) {
+                  charsPerRow = 3;
+                  fontSize = 'text-sm';
+                  lineHeight = 16;
+                  charSpacing = 16;
+                } else {
+                  // 7-8 characters
+                  charsPerRow = 4;
+                  fontSize = 'text-xs';
+                  lineHeight = 14;
+                  charSpacing = 14;
+                }
+
+                const numRows = Math.ceil(itemCount / charsPerRow);
+                const startY = config.position.y - ((numRows - 1) * lineHeight) / 2;
+
+                return letter.map((item, index) => {
+                  // Find the original sign for this planet
+                  const planetData = planetSigns?.find(ps => ps.planet === item);
+                  const color = planetData
+                    ? getPlanetColor(item, planetData.sign)
+                    : undefined;
+
+                  // Calculate row and column for this item
+                  const row = Math.floor(index / charsPerRow);
+                  const col = index % charsPerRow;
+                  const charsInThisRow = Math.min(charsPerRow, itemCount - (row * charsPerRow));
+
+                  // Calculate x position (centered within the row)
+                  const xOffset = (col - (charsInThisRow - 1) / 2) * charSpacing;
+                  const yOffset = row * lineHeight;
+
+                  return (
+                    <text
+                      key={`${item}-${index}`}
+                      x={config.position.x + xOffset}
+                      y={startY + yOffset}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      className={`pointer-events-none font-semibold select-none ${fontSize}`}
+                      style={{ fill: color }}
+                    >
+                      {item}
+                    </text>
+                  );
+                });
+              })()
             )}
           </>
         )}

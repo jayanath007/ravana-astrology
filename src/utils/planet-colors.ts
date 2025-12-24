@@ -20,11 +20,11 @@ export const PLANETS = {
 
 // Color definitions
 export const PLANET_COLORS = {
-  DARK_GREEN: '#006400',
+  DARK_GREEN: '#047904ff',
   GREEN: '#008000',
-  SADDLE_BROWN: '#8B4513',
+  SADDLE_BROWN: '#8d3e05ff',
   BLUE: '#0000FF',
-  DARK_GRAY: '#A9A9A9',
+  DARK_GRAY: '#5c5c5cff',
   RED: '#FF0000',
 } as const;
 
