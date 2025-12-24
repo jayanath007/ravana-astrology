@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   getNavamsaChartData,
-  getThathkaalaKendraChartData,
+  getThathkalaChartData,
 } from '@/services/birthChartService';
 import type { BirthDetails, PlanetSign } from '@/types/birthChart';
 
@@ -10,7 +10,7 @@ import type { BirthDetails, PlanetSign } from '@/types/birthChart';
  */
 interface UseDivisionChartOptions {
   birthDetails: BirthDetails | undefined;
-  chartType: 'navamsa' | 'thathkaalaKendra';
+  chartType: 'navamsa' | 'thathkala';
   enabled?: boolean;
 }
 
@@ -30,7 +30,7 @@ interface UseDivisionChartReturn {
  *
  * @param options - Configuration for chart fetching
  * @param options.birthDetails - Birth details for calculation
- * @param options.chartType - Type of division chart ('navamsa' | 'thathkaalaKendra')
+ * @param options.chartType - Type of division chart ('navamsa' | 'thathkala')
  * @param options.enabled - Whether to fetch data (default: true)
  *
  * @returns Chart data with loading and error states, plus a retry function
@@ -70,7 +70,7 @@ export function useDivisionChart(
       const fetchFn =
         chartType === 'navamsa'
           ? getNavamsaChartData
-          : getThathkaalaKendraChartData;
+          : getThathkalaChartData;
 
       // Fetch chart data
       const { zodiacNumber: fetchedZodiacNumber, planetSigns: fetchedPlanetSigns } =
@@ -82,7 +82,7 @@ export function useDivisionChart(
       const errorMessage =
         err instanceof Error
           ? err.message
-          : `Failed to fetch ${chartType === 'navamsa' ? 'Navamsa' : 'Thathkaala Kendra'} chart`;
+          : `Failed to fetch ${chartType === 'navamsa' ? 'Navamsa' : 'Thathkala'} chart`;
       setError(errorMessage);
       console.error(`Error fetching ${chartType} chart:`, err);
     } finally {

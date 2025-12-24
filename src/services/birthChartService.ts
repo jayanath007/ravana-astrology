@@ -140,10 +140,10 @@ export async function getNavamsaChartData(birthDetails: BirthDetails): Promise<D
 }
 
 /**
- * Fetches Thathkaala Kendra chart data
- * Uses current date/time for ascendant and birth details for planet signs
+ * Fetches Thathkala (D3) chart data
+ * Uses birth details for ascendant and current date/time for planet signs
  */
-export async function getThathkaalaKendraChartData(
+export async function getThathkalaChartData(
   birthDetails: BirthDetails
 ): Promise<DivisionChartData> {
   // Get current date and time
@@ -151,7 +151,7 @@ export async function getThathkaalaKendraChartData(
   const currentDate = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
   const currentTime = now.toTimeString().slice(0, 5); // Format: HH:mm
 
-  // Create request body with current date/time for ascendant
+  // Create request body with current date/time for planet signs
   const currentDateTimeRequest: BirthDetails = {
     birthDate: currentDate,
     birthTime: currentTime,
@@ -160,10 +160,10 @@ export async function getThathkaalaKendraChartData(
     timeZoneId: birthDetails.timeZoneId,
   };
 
-  // Fetch ascendant with current date/time and planet signs with birth details
+  // Fetch ascendant with birth details and planet signs with current date/time
   const [zodiacNumber, planetSigns] = await Promise.all([
-    getAscendant(currentDateTimeRequest),
-    getPlanetSigns(birthDetails),
+    getAscendant(birthDetails),
+    getPlanetSigns(currentDateTimeRequest),
   ]);
 
   return {
