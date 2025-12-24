@@ -30,7 +30,7 @@ export function BirthDetailsForm() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-
+   
     try {
       // Call both APIs in parallel
       const [ascendantResponse, planetSignsResponse] = await Promise.all([
@@ -46,6 +46,8 @@ export function BirthDetailsForm() {
           headers: {
             'Content-Type': 'application/json',
           },
+
+  
           body: JSON.stringify(formData),
         })
       ]);

@@ -46,9 +46,7 @@ export function GridArea({ config, letter, onLetterSelect, offsetValue, planetSi
       ? 'fill-neutral-100 dark:fill-neutral-800 stroke-neutral-400 dark:stroke-neutral-600'
       : cn(
           'stroke-neutral-400 dark:stroke-neutral-600',
-          hasLetters
-            ? 'fill-blue-100 dark:fill-blue-900'
-            : 'fill-neutral-100 dark:fill-neutral-800',
+          'fill-neutral-100 dark:fill-neutral-800',
           isHovered && !config.isCenter && 'fill-neutral-200 dark:fill-neutral-700 stroke-neutral-800 dark:stroke-neutral-300',
           !config.isCenter && 'cursor-pointer'
         )
@@ -204,27 +202,28 @@ export function GridArea({ config, letter, onLetterSelect, offsetValue, planetSi
                 const itemCount = letter.length;
 
                 // Determine characters per row and font size based on count
-                let charsPerRow = 3;
-                let fontSize = 'text-base'; // 16px
-                let lineHeight = 18;
-                let charSpacing = 18;
+                // Reduced charsPerRow for more vertical stacking
+                let charsPerRow = 2;
+                let fontSize = 'text-xs'; // 12px
+                let lineHeight = 14;
+                let charSpacing = 14;
 
                 if (itemCount <= 3) {
-                  charsPerRow = 3;
-                  fontSize = 'text-base';
-                  lineHeight = 18;
-                  charSpacing = 18;
-                } else if (itemCount <= 6) {
-                  charsPerRow = 3;
-                  fontSize = 'text-sm';
-                  lineHeight = 16;
-                  charSpacing = 16;
-                } else {
-                  // 7-8 characters
-                  charsPerRow = 4;
+                  charsPerRow = 2;
                   fontSize = 'text-xs';
                   lineHeight = 14;
                   charSpacing = 14;
+                } else if (itemCount <= 6) {
+                  charsPerRow = 2;
+                  fontSize = 'text-[10px]';
+                  lineHeight = 12;
+                  charSpacing = 12;
+                } else {
+                  // 7-8 characters
+                  charsPerRow = 3;
+                  fontSize = 'text-[9px]';
+                  lineHeight = 11;
+                  charSpacing = 11;
                 }
 
                 const numRows = Math.ceil(itemCount / charsPerRow);

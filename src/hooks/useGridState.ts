@@ -20,7 +20,7 @@ export function useGridState() {
       const letterIndex = currentLetters.indexOf(letter);
       const newLetters = letterIndex >= 0
         ? currentLetters.filter((_, i) => i !== letterIndex)
-        : currentLetters.length < 5
+        : currentLetters.length < 9
         ? [...currentLetters, letter]
         : currentLetters;
 
