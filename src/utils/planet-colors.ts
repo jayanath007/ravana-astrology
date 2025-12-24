@@ -12,7 +12,11 @@
  * - MEDIUM (මධ්‍යම): Brown - Medium strength
  * - WEAK (දුර්වල): Dark Orange - Weak position
  * - DEBILITATED (නීච / අති දුර්වල): Red - Planet is debilitated
+ *
+ * Note: All colors are now centralized in src/styles/theme-colors.ts
  */
+
+import { ASTROLOGICAL_COLORS } from '@/styles/theme-colors';
 
 // Planet names in Sinhala (as returned from the API)
 export const PLANETS = {
@@ -26,16 +30,10 @@ export const PLANETS = {
   RAA: 'රා',    // රහු (Rahu)
   KE: 'කේ',     // කේතු (Ketu)
 } as const;
+
 // Color definitions based on astrological significance
-export const PLANET_COLORS = {
-  EXALTATION: '#0000FF',       // උච්ච (Blue)
-  TRINE: '#10d410ff',            // මුලත්‍රිකෝණ (Dark Green)
-  OWN: '#008000',              // ස්වගෘහ (Green)
-  STRONG: '#A9A9A9',           // බලවත් (Ash/Gray)
-  MEDIUM: '#0a0a0aff',           // මධ්‍යම (Brown)
-  WEAK: '#97580bff',             // දුර්වල (Dark Orange)
-  DEBILITATED: '#FF0000',      // නීච / අති දුර්වල (Red)
-} as const;
+// Import from centralized theme configuration
+export const PLANET_COLORS = ASTROLOGICAL_COLORS;
 
 // Planet-Sign color mapping table
 // Rows: Signs 1-12 (රාශි අංකය)

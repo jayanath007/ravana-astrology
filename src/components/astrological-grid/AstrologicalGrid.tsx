@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGridState } from '@/hooks/useGridState';
 import { GRID_CONFIG } from './grid-config';
 import { GridArea } from './GridArea';
 import type { PlanetSign } from '@/components/birth-details/BirthDetailsForm';
+import { TAILWIND_CLASSES } from '@/styles/theme-colors';
+import { calculateGrahaDrishti, grahaDrishtiMapToObject } from '@/utils/graha-drishti';
 
 export function AstrologicalGrid() {
   const location = useLocation();
@@ -15,6 +17,16 @@ export function AstrologicalGrid() {
   const [offsetValue] = useState(zodiacNumber || 1);
   const [selectedAreaId, setSelectedAreaId] = useState<number | null>(null);
   const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null);
+
+  // Calculate Graha Drishti from planet signs
+  const grahaDrishtiData = useMemo(() => {
+    if (!planetSigns || planetSigns.length === 0) {
+      return null;
+    }
+
+    const drishtiMap = calculateGrahaDrishti(planetSigns);
+    return grahaDrishtiMapToObject(drishtiMap);
+  }, [planetSigns]);
 
   const handleAreaSelect = (areaId: number) => {
     // Toggle selection: if clicking the same area, deselect it
@@ -61,7 +73,7 @@ export function AstrologicalGrid() {
       <div className="mb-6">
         <button
           onClick={() => navigate('/')}
-          className="px-4 py-2 bg-neutral-600 hover:bg-neutral-700 text-white font-medium rounded-md transition-colors"
+          className={`px-4 py-2 font-medium rounded-md transition-colors ${TAILWIND_CLASSES.ui.backButton}`}
         >
           ← Back to Input
         </button>
@@ -72,7 +84,7 @@ export function AstrologicalGrid() {
         <div className="w-full max-w-2xl">
           <svg
             viewBox="0 0 300 300"
-            className="w-full h-full border-2 border-neutral-300 dark:border-neutral-700"
+            className={`w-full h-full border-2 ${TAILWIND_CLASSES.ui.gridBorder}`}
             xmlns="http://www.w3.org/2000/svg"
           >
             {GRID_CONFIG.map((config) => (
@@ -108,8 +120,8 @@ export function AstrologicalGrid() {
               onClick={() => handlePlanetSelect(planet.symbol)}
               className={`px-6 py-3 border-2 rounded-lg transition-colors font-semibold text-lg ${
                 selectedPlanet === planet.symbol
-                  ? 'bg-green-600 dark:bg-green-700 border-green-700 dark:border-green-600 text-white'
-                  : 'bg-white dark:bg-neutral-800 border-green-700 dark:border-green-600 hover:bg-green-50 dark:hover:bg-green-900'
+                  ? TAILWIND_CLASSES.button.selected
+                  : `${TAILWIND_CLASSES.button.default} ${TAILWIND_CLASSES.button.hover}`
               }`}
               title={planet.name}
             >
@@ -117,6 +129,23 @@ export function AstrologicalGrid() {
             </button>
           ))}
         </div>
+
+        {/* Graha Drishti Display */}
+        {grahaDrishtiData && (
+          <section
+            className={`w-full max-w-2xl p-4 ${TAILWIND_CLASSES.debugDisplay.container}`}
+            aria-label="Graha Drishti Aspects Display"
+          >
+            <h3 className={`mb-2 text-sm ${TAILWIND_CLASSES.debugDisplay.title}`}>
+              Graha Drishti (Planetary Aspects)
+            </h3>
+            <pre className={`p-3 rounded overflow-x-auto ${TAILWIND_CLASSES.debugDisplay.code}`}>
+              <code>
+                {JSON.stringify(grahaDrishtiData, null, 2)}
+              </code>
+            </pre>
+          </section>
+        )}
       </div>
     </div>
   );

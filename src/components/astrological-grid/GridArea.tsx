@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { getZodiacSignByAreaId } from './zodiac-config';
 import { getPlanetColor } from '@/utils/planet-colors';
 import type { PlanetSign } from '@/components/birth-details/BirthDetailsForm';
+import { TAILWIND_CLASSES, INTERACTION_COLORS } from '@/styles/theme-colors';
 
 interface GridAreaProps {
   config: AreaConfig;
@@ -36,18 +37,19 @@ export function GridArea({ config, letter, offsetValue, planetSigns, isSelected 
   };
 
   const shapeClasses = cn(
-    'transition-all duration-200 stroke-2',
+    'transition-all duration-200',
+    TAILWIND_CLASSES.grid.borderWidth,
     config.isCenter
-      ? 'fill-neutral-100 dark:fill-neutral-800 stroke-green-800 dark:stroke-green-700'
+      ? cn(TAILWIND_CLASSES.grid.fillDefault, TAILWIND_CLASSES.grid.borderDefault)
       : cn(
-          'fill-neutral-100 dark:fill-neutral-800',
+          TAILWIND_CLASSES.grid.fillDefault,
           'cursor-pointer',
           // Selected state (persistent highlight) - green fill and stroke
-          isSelected && 'fill-green-100 dark:fill-green-900 stroke-green-600 dark:stroke-green-400',
+          isSelected && cn(TAILWIND_CLASSES.grid.fillSelected, TAILWIND_CLASSES.grid.borderSelected),
           // Hover state (temporary highlight) - only if not already selected
-          !isSelected && isHovered && 'fill-neutral-200 dark:fill-neutral-700 stroke-green-700 dark:stroke-green-500',
+          !isSelected && isHovered && cn(TAILWIND_CLASSES.grid.fillHover, TAILWIND_CLASSES.grid.borderHover),
           // Default state - dark green border
-          !isSelected && !isHovered && 'stroke-green-800 dark:stroke-green-700'
+          !isSelected && !isHovered && TAILWIND_CLASSES.grid.borderDefault
         )
   );
 
@@ -231,13 +233,15 @@ export function GridArea({ config, letter, offsetValue, planetSigns, isSelected 
 
                   return (
                     <g key={`${item}-${index}`}>
-                      {/* Highlight background circle for selected planet */}
+                      {/* Highlight background square for selected planet */}
                       {isHighlighted && (
-                        <circle
-                          cx={config.position.x + xOffset}
-                          cy={startY + yOffset}
-                          r={10}
-                          className="fill-green-200 dark:fill-green-500 opacity-80"
+                        <rect
+                          x={config.position.x + xOffset - parseInt(INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE) / 2}
+                          y={startY + yOffset - parseInt(INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE) / 2}
+                          width={INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE}
+                          height={INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE}
+                          className={TAILWIND_CLASSES.planetHighlight}
+                          opacity={INTERACTION_COLORS.PLANET_HIGHLIGHT_OPACITY}
                         />
                       )}
                       <text
