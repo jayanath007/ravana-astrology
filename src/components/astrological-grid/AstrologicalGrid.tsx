@@ -7,6 +7,22 @@ import type { PlanetSign } from '@/components/birth-details/BirthDetailsForm';
 import { TAILWIND_CLASSES } from '@/styles/theme-colors';
 import { calculateGrahaDrishti, grahaDrishtiMapToObject } from '@/utils/graha-drishti';
 
+// Mapping of zodiac sign numbers (1-12) to their ruling planets
+const ZODIAC_LORDS: Record<number, string> = {
+  1: 'කු',  // Aries (මේශ) → කුජ (Mars)
+  2: 'ශු', // Taurus (වෘෂභ) → ශුක්‍ර (Venus)
+  3: 'බු', // Gemini (මිථුන) → බුධ (Mercury)
+  4: 'ච',  // Cancer (කර්ක) → චන්ද්‍ර (Moon)
+  5: 'ර',  // Leo (සිංහ) → සූර්ය (Sun)
+  6: 'බු', // Virgo (කන්‍යා) → බුධ (Mercury)
+  7: 'ශු', // Libra (තුලා) → ශුක්‍ර (Venus)
+  8: 'කු', // Scorpio (වෘශික) → මංගල (Mars)
+  9: 'ගු', // Sagittarius (ධන) → ගුරු (Jupiter)
+  10: 'ශ', // Capricorn (මකර) → ශනි (Saturn)
+  11: 'ශ', // Aquarius (කුම්භ) → ශනි (Saturn)
+  12: 'ගු' // Pisces (මීන) → ගුරු (Jupiter)
+};
+
 export function AstrologicalGrid() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -16,6 +32,7 @@ export function AstrologicalGrid() {
   const { getLetter, initializeGrid } = useGridState();
   const [offsetValue] = useState(zodiacNumber || 1);
   const [selectedAreaId, setSelectedAreaId] = useState<number | null>(null);
+  const [highlightedPlanet, setHighlightedPlanet] = useState<string | null>(null);
 
   // Calculate Graha Drishti from planet signs
   const grahaDrishtiData = useMemo(() => {
@@ -37,7 +54,22 @@ export function AstrologicalGrid() {
 
   const handleAreaSelect = (areaId: number) => {
     // Toggle selection: if clicking the same area, deselect it
-    setSelectedAreaId(prevId => prevId === areaId ? null : areaId);
+    const newSelectedAreaId = selectedAreaId === areaId ? null : areaId;
+    setSelectedAreaId(newSelectedAreaId);
+
+    // Calculate zodiac sign for this area to find ruling planet
+    if (newSelectedAreaId !== null) {
+      // Same calculation as in GridArea.tsx: ((offsetValue - 1) + areaId) % 12
+      const signId = ((offsetValue - 1) + newSelectedAreaId) % 12;
+      const finalSignId = signId === 0 ? 12 : signId;
+
+      // Look up the ruling planet for this zodiac sign
+      const rulingPlanet = ZODIAC_LORDS[finalSignId];
+      setHighlightedPlanet(rulingPlanet);
+    } else {
+      // Deselect: clear the highlighted planet
+      setHighlightedPlanet(null);
+    }
   };
 
   // Map planets to their corresponding areas when component mounts or when planetSigns/offsetValue changes
@@ -99,6 +131,7 @@ export function AstrologicalGrid() {
                 isSelected={selectedAreaId === config.id}
                 onSelect={handleAreaSelect}
                 aspectingPlanets={aspectingPlanets}
+                highlightedPlanet={highlightedPlanet}
               />
             ))}
           </svg>

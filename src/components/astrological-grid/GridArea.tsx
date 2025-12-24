@@ -14,9 +14,10 @@ interface GridAreaProps {
   isSelected?: boolean;
   onSelect?: (areaId: number) => void;
   aspectingPlanets?: string[];
+  highlightedPlanet?: string | null;
 }
 
-export function GridArea({ config, letter, offsetValue, planetSigns, isSelected = false, onSelect, aspectingPlanets = [] }: GridAreaProps) {
+export function GridArea({ config, letter, offsetValue, planetSigns, isSelected = false, onSelect, aspectingPlanets = [], highlightedPlanet = null }: GridAreaProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   // Calculate zodiac sign: getZodiacSignByAreaId((x - 1) + currentValue)
@@ -231,6 +232,21 @@ export function GridArea({ config, letter, offsetValue, planetSigns, isSelected 
                   const yOffset = row * lineHeight;
                   const isAspecting = aspectingPlanets.includes(item);
 
+                  // Check if this planet is the highlighted ruling planet
+                  const isHighlighted = highlightedPlanet === item;
+
+                  // Adjust font size if this planet is highlighted (increase by 7 units)
+                  let adjustedFontSize = fontSize;
+                  if (isHighlighted) {
+                    if (fontSize === 'text-xs') {
+                      adjustedFontSize = 'text-[19px]'; // 12px → 19px
+                    } else if (fontSize === 'text-[10px]') {
+                      adjustedFontSize = 'text-[17px]'; // 10px → 17px
+                    } else if (fontSize === 'text-[9px]') {
+                      adjustedFontSize = 'text-[16px]'; // 9px → 16px
+                    }
+                  }
+
                   return (
                     <g key={`${item}-${index}`}>
                       {/* Highlight background square for aspecting planet (orange) */}
@@ -249,7 +265,7 @@ export function GridArea({ config, letter, offsetValue, planetSigns, isSelected 
                         y={startY + yOffset}
                         textAnchor="middle"
                         dominantBaseline="central"
-                        className={`pointer-events-none font-semibold select-none ${fontSize}`}
+                        className={`pointer-events-none font-semibold select-none ${adjustedFontSize}`}
                         style={{ fill: color }}
                       >
                         {item}
