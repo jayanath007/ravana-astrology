@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AstrologicalGrid } from '@/components/astrological-grid/AstrologicalGrid';
-import type { PlanetSign, BirthDetails } from '@/components/birth-details/BirthDetailsForm';
+import { getNavamsaChartData, getThathkaalaKendraChartData } from '@/services/birthChartService';
+import type { PlanetSign, BirthDetails } from '@/types/birthChart';
 import { TAILWIND_CLASSES } from '@/styles/theme-colors';
 
 export function DivisionChartsPage() {
@@ -37,37 +38,11 @@ export function DivisionChartsPage() {
       setNavamsaError(null);
 
       try {
-        // Call both Navamsa APIs in parallel
-        const [navamsaAscendantResponse, navamsaSignsResponse] = await Promise.all([
-          fetch('http://localhost:5188/api/birthchart/navamsa-ascendant', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(birthDetails),
-          }),
-          fetch('http://localhost:5188/api/birthchart/navamsa-signs', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(birthDetails),
-          })
-        ]);
+        // Fetch Navamsa chart data using service layer
+        const { zodiacNumber, planetSigns } = await getNavamsaChartData(birthDetails);
 
-        if (!navamsaAscendantResponse.ok) {
-          throw new Error(`Navamsa ascendant API failed: ${navamsaAscendantResponse.status}`);
-        }
-
-        if (!navamsaSignsResponse.ok) {
-          throw new Error(`Navamsa signs API failed: ${navamsaSignsResponse.status}`);
-        }
-
-        const navamsaAscendantData = await navamsaAscendantResponse.json();
-        const navamsaSignsData: PlanetSign[] = await navamsaSignsResponse.json();
-
-        setNavamsaZodiacNumber(navamsaAscendantData.sign);
-        setNavamsaPlanetSigns(navamsaSignsData);
+        setNavamsaZodiacNumber(zodiacNumber);
+        setNavamsaPlanetSigns(planetSigns);
       } catch (err) {
         setNavamsaError(err instanceof Error ? err.message : 'Failed to fetch Navamsa chart');
         console.error('Error fetching Navamsa chart:', err);
@@ -91,53 +66,12 @@ export function DivisionChartsPage() {
       setDrekkanaError(null);
 
       try {
-        // Get current date and time
-        const now = new Date();
-        const currentDate = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-        const currentTime = now.toTimeString().slice(0, 5); // Format: HH:mm
+        // Fetch Thathkaala Kendra chart data using service layer
+        // Uses current date/time for ascendant and birth details for planet signs
+        const { zodiacNumber, planetSigns } = await getThathkaalaKendraChartData(birthDetails);
 
-        // Create request body with current date/time for ascendant
-        const currentDateTimeRequest = {
-          birthDate: currentDate,
-          birthTime: currentTime,
-          latitude: birthDetails.latitude,
-          longitude: birthDetails.longitude,
-          timeZoneId: birthDetails.timeZoneId
-        };
-
-        // Call both APIs in parallel
-        // Ascendant: use current date/time
-        // Planet signs: use birth details with planet-signs endpoint
-        const [ascendantResponse, planetSignsResponse] = await Promise.all([
-          fetch('http://localhost:5188/api/birthchart/ascendant', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(currentDateTimeRequest),
-          }),
-          fetch('http://localhost:5188/api/birthchart/planet-signs', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(birthDetails),
-          })
-        ]);
-
-        if (!ascendantResponse.ok) {
-          throw new Error(`Thathkaala Kendra ascendant API failed: ${ascendantResponse.status}`);
-        }
-
-        if (!planetSignsResponse.ok) {
-          throw new Error(`Thathkaala Kendra planet signs API failed: ${planetSignsResponse.status}`);
-        }
-
-        const ascendantData = await ascendantResponse.json();
-        const planetSignsData: PlanetSign[] = await planetSignsResponse.json();
-
-        setDrekkanaZodiacNumber(ascendantData.sign);
-        setDrekkanaPlanetSigns(planetSignsData);
+        setDrekkanaZodiacNumber(zodiacNumber);
+        setDrekkanaPlanetSigns(planetSigns);
       } catch (err) {
         setDrekkanaError(err instanceof Error ? err.message : 'Failed to fetch Thathkaala Kendra chart');
         console.error('Error fetching Thathkaala Kendra chart:', err);

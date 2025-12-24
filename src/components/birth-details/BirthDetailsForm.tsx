@@ -1,18 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getBirthChartData } from '@/services/birthChartService';
+import type { BirthDetails, PlanetSign } from '@/types/birthChart';
 
-export interface BirthDetails {
-  birthDate: string;
-  birthTime: string;
-  latitude: number;
-  longitude: number;
-  timeZoneId: string;
-}
-
-export interface PlanetSign {
-  planet: string;
-  sign: number;
-}
+// Re-export types for backward compatibility with existing imports
+export type { BirthDetails, PlanetSign };
 
 export function BirthDetailsForm() {
   const navigate = useNavigate();
@@ -30,49 +22,17 @@ export function BirthDetailsForm() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-   
+
     try {
-      // Call both APIs in parallel
-      const [ascendantResponse, planetSignsResponse] = await Promise.all([
-        fetch('http://localhost:5188/api/birthchart/ascendant', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        }),
-        fetch('http://localhost:5188/api/birthchart/planet-signs', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-
-  
-          body: JSON.stringify(formData),
-        })
-      ]);
-
-      if (!ascendantResponse.ok) {
-        throw new Error(`Ascendant API request failed: ${ascendantResponse.status} ${ascendantResponse.statusText}`);
-      }
-
-      if (!planetSignsResponse.ok) {
-        throw new Error(`Planet signs API request failed: ${planetSignsResponse.status} ${planetSignsResponse.statusText}`);
-      }
-
-      // Get the zodiac sign number from the ascendant response
-      const ascendantData = await ascendantResponse.json();
-      const zodiacNumber = ascendantData.sign;
-
-      // Get the planet signs array from the planet-signs response
-      const planetSigns: PlanetSign[] = await planetSignsResponse.json();
+      // Fetch birth chart data using service layer
+      const { zodiacNumber, planetSigns } = await getBirthChartData(formData);
 
       // Navigate to the astrological grid page with all data
       navigate('/chart', {
         state: {
           birthDetails: formData,
-          zodiacNumber: zodiacNumber,
-          planetSigns: planetSigns
+          zodiacNumber,
+          planetSigns,
         }
       });
     } catch (err) {
@@ -89,45 +49,15 @@ export function BirthDetailsForm() {
     setError(null);
 
     try {
-      // Call both APIs in parallel
-      const [ascendantResponse, planetSignsResponse] = await Promise.all([
-        fetch('http://localhost:5188/api/birthchart/ascendant', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        }),
-        fetch('http://localhost:5188/api/birthchart/planet-signs', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        })
-      ]);
-
-      if (!ascendantResponse.ok) {
-        throw new Error(`Ascendant API request failed: ${ascendantResponse.status} ${ascendantResponse.statusText}`);
-      }
-
-      if (!planetSignsResponse.ok) {
-        throw new Error(`Planet signs API request failed: ${planetSignsResponse.status} ${planetSignsResponse.statusText}`);
-      }
-
-      // Get the zodiac sign number from the ascendant response
-      const ascendantData = await ascendantResponse.json();
-      const zodiacNumber = ascendantData.sign;
-
-      // Get the planet signs array from the planet-signs response
-      const planetSigns: PlanetSign[] = await planetSignsResponse.json();
+      // Fetch birth chart data using service layer
+      const { zodiacNumber, planetSigns } = await getBirthChartData(formData);
 
       // Navigate to the division charts page with all data
       navigate('/divisions', {
         state: {
           birthDetails: formData,
-          zodiacNumber: zodiacNumber,
-          planetSigns: planetSigns
+          zodiacNumber,
+          planetSigns,
         }
       });
     } catch (err) {
