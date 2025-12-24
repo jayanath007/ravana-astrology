@@ -11,8 +11,20 @@ export function AstrologicalGrid() {
   const zodiacNumber = location.state?.zodiacNumber as number | undefined;
   const planetSigns = location.state?.planetSigns as PlanetSign[] | undefined;
 
-  const { getLetter, setLetter, initializeGrid } = useGridState();
+  const { getLetter, initializeGrid } = useGridState();
   const [offsetValue] = useState(zodiacNumber || 1);
+  const [selectedAreaId, setSelectedAreaId] = useState<number | null>(null);
+  const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null);
+
+  const handleAreaSelect = (areaId: number) => {
+    // Toggle selection: if clicking the same area, deselect it
+    setSelectedAreaId(prevId => prevId === areaId ? null : areaId);
+  };
+
+  const handlePlanetSelect = (planet: string) => {
+    // Toggle selection: if clicking the same planet, deselect it
+    setSelectedPlanet(prevPlanet => prevPlanet === planet ? null : planet);
+  };
 
   // Map planets to their corresponding areas when component mounts or when planetSigns/offsetValue changes
   useEffect(() => {
@@ -55,7 +67,7 @@ export function AstrologicalGrid() {
         </button>
       </div>
 
-      <div className="flex items-center justify-center">
+      <div className="flex flex-col items-center justify-center gap-6">
         {/* Grid */}
         <div className="w-full max-w-2xl">
           <svg
@@ -68,12 +80,42 @@ export function AstrologicalGrid() {
                 key={config.id}
                 config={config}
                 letter={getLetter(config.id)}
-                onLetterSelect={setLetter}
                 offsetValue={offsetValue}
                 planetSigns={planetSigns}
+                isSelected={selectedAreaId === config.id}
+                onSelect={handleAreaSelect}
+                selectedPlanet={selectedPlanet}
               />
             ))}
           </svg>
+        </div>
+
+        {/* Planet Buttons */}
+        <div className="flex flex-wrap gap-3 justify-center max-w-2xl">
+          {[
+            { symbol: 'ර', name: 'සූර්ය (Sun)' },
+            { symbol: 'ච', name: 'චන්ද්‍ර (Moon)' },
+            { symbol: 'කු', name: 'මංගල (Mars)' },
+            { symbol: 'බු', name: 'බුධ (Mercury)' },
+            { symbol: 'ගු', name: 'ගුරු (Jupiter)' },
+            { symbol: 'ශු', name: 'ශුක්‍ර (Venus)' },
+            { symbol: 'ශ', name: 'ශනි (Saturn)' },
+            { symbol: 'රා', name: 'රහු (Rahu)' },
+            { symbol: 'කේ', name: 'කේතු (Ketu)' },
+          ].map((planet) => (
+            <button
+              key={planet.symbol}
+              onClick={() => handlePlanetSelect(planet.symbol)}
+              className={`px-6 py-3 border-2 rounded-lg transition-colors font-semibold text-lg ${
+                selectedPlanet === planet.symbol
+                  ? 'bg-green-600 dark:bg-green-700 border-green-700 dark:border-green-600 text-white'
+                  : 'bg-white dark:bg-neutral-800 border-green-700 dark:border-green-600 hover:bg-green-50 dark:hover:bg-green-900'
+              }`}
+              title={planet.name}
+            >
+              {planet.symbol}
+            </button>
+          ))}
         </div>
       </div>
     </div>

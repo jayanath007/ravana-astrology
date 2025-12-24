@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import type { AreaConfig } from './types';
-import { LetterPicker } from './LetterPicker';
 import { cn } from '@/lib/utils';
 import { getZodiacSignByAreaId } from './zodiac-config';
 import { getPlanetColor } from '@/utils/planet-colors';
@@ -9,14 +8,15 @@ import type { PlanetSign } from '@/components/birth-details/BirthDetailsForm';
 interface GridAreaProps {
   config: AreaConfig;
   letter: string[];
-  onLetterSelect: (areaId: number, letter: string | null) => void;
   offsetValue: number;
   planetSigns?: PlanetSign[];
+  isSelected?: boolean;
+  onSelect?: (areaId: number) => void;
+  selectedPlanet?: string | null;
 }
 
-export function GridArea({ config, letter, onLetterSelect, offsetValue, planetSigns }: GridAreaProps) {
+export function GridArea({ config, letter, offsetValue, planetSigns, isSelected = false, onSelect, selectedPlanet = null }: GridAreaProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   // Calculate zodiac sign: getZodiacSignByAreaId((x - 1) + currentValue)
   // where x = offsetValue, currentValue = area ID (0-12)
@@ -27,28 +27,27 @@ export function GridArea({ config, letter, onLetterSelect, offsetValue, planetSi
     return getZodiacSignByAreaId(finalSignId);
   }, [offsetValue, config.id]);
 
+  const hasLetters = letter.length > 0;
+
   const handleClick = () => {
-    if (!config.isCenter) {
-      setIsPickerOpen(true);
+    if (!config.isCenter && onSelect) {
+      onSelect(config.id);
     }
   };
 
-  const handleLetterSelect = (selectedLetter: string | null) => {
-    onLetterSelect(config.id, selectedLetter);
-  };
-
-  const hasLetters = letter.length > 0;
-
   const shapeClasses = cn(
-    'transition-all duration-200',
-    isHovered && !config.isCenter ? 'stroke-[3]' : 'stroke-2',
+    'transition-all duration-200 stroke-2',
     config.isCenter
-      ? 'fill-neutral-100 dark:fill-neutral-800 stroke-neutral-400 dark:stroke-neutral-600'
+      ? 'fill-neutral-100 dark:fill-neutral-800 stroke-green-800 dark:stroke-green-700'
       : cn(
-          'stroke-neutral-400 dark:stroke-neutral-600',
           'fill-neutral-100 dark:fill-neutral-800',
-          isHovered && !config.isCenter && 'fill-neutral-200 dark:fill-neutral-700 stroke-neutral-800 dark:stroke-neutral-300',
-          !config.isCenter && 'cursor-pointer'
+          'cursor-pointer',
+          // Selected state (persistent highlight) - green fill and stroke
+          isSelected && 'fill-green-100 dark:fill-green-900 stroke-green-600 dark:stroke-green-400',
+          // Hover state (temporary highlight) - only if not already selected
+          !isSelected && isHovered && 'fill-neutral-200 dark:fill-neutral-700 stroke-green-700 dark:stroke-green-500',
+          // Default state - dark green border
+          !isSelected && !isHovered && 'stroke-green-800 dark:stroke-green-700'
         )
   );
 
@@ -63,8 +62,6 @@ export function GridArea({ config, letter, onLetterSelect, offsetValue, planetSi
           onMouseEnter={() => !config.isCenter && setIsHovered(true)}
           onMouseLeave={() => !config.isCenter && setIsHovered(false)}
           onClick={handleClick}
-          role={config.isCenter ? undefined : 'button'}
-          aria-label={config.isCenter ? 'Center area with 0' : `Area ${config.id}${hasLetters ? `: ${letter.join('')}` : ''}`}
         />
       );
     } else {
@@ -84,8 +81,6 @@ export function GridArea({ config, letter, onLetterSelect, offsetValue, planetSi
           onMouseEnter={() => !config.isCenter && setIsHovered(true)}
           onMouseLeave={() => !config.isCenter && setIsHovered(false)}
           onClick={handleClick}
-          role={config.isCenter ? undefined : 'button'}
-          aria-label={config.isCenter ? 'Center area with 0' : `Area ${config.id}${hasLetters ? `: ${letter.join('')}` : ''}`}
         />
       );
     }
@@ -181,24 +176,12 @@ export function GridArea({ config, letter, onLetterSelect, offsetValue, planetSi
           </>
         )}
 
-        {/* Display letters/planets or ID for center */}
-        {(hasLetters || config.isCenter) && (
+        {/* Display letters/planets */}
+        {hasLetters && !config.isCenter && (
           <>
-            {config.isCenter ? (
-              // Center area displays ID
-              <text
-                x={config.position.x}
-                y={config.position.y}
-                textAnchor="middle"
-                dominantBaseline="central"
-                className="pointer-events-none font-semibold select-none text-sm fill-neutral-500 dark:fill-neutral-400"
-              >
-                {config.id}
-              </text>
-            ) : (
-              // Non-center areas: render each planet/letter with individual color
-              // Support up to 8 characters with multi-line layout
-              (() => {
+            {/* Non-center areas: render each planet/letter with individual color */}
+            {/* Support up to 8 characters with multi-line layout */}
+            {(() => {
                 const itemCount = letter.length;
 
                 // Determine characters per row and font size based on count
@@ -244,44 +227,36 @@ export function GridArea({ config, letter, onLetterSelect, offsetValue, planetSi
                   // Calculate x position (centered within the row)
                   const xOffset = (col - (charsInThisRow - 1) / 2) * charSpacing;
                   const yOffset = row * lineHeight;
+                  const isHighlighted = selectedPlanet === item;
 
                   return (
-                    <text
-                      key={`${item}-${index}`}
-                      x={config.position.x + xOffset}
-                      y={startY + yOffset}
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      className={`pointer-events-none font-semibold select-none ${fontSize}`}
-                      style={{ fill: color }}
-                    >
-                      {item}
-                    </text>
+                    <g key={`${item}-${index}`}>
+                      {/* Highlight background circle for selected planet */}
+                      {isHighlighted && (
+                        <circle
+                          cx={config.position.x + xOffset}
+                          cy={startY + yOffset}
+                          r={10}
+                          className="fill-green-200 dark:fill-green-500 opacity-80"
+                        />
+                      )}
+                      <text
+                        x={config.position.x + xOffset}
+                        y={startY + yOffset}
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        className={`pointer-events-none font-semibold select-none ${fontSize}`}
+                        style={{ fill: color }}
+                      >
+                        {item}
+                      </text>
+                    </g>
                   );
                 });
-              })()
-            )}
+              })()}
           </>
         )}
       </g>
-
-      {!config.isCenter && (
-        <LetterPicker
-          open={isPickerOpen}
-          onOpenChange={setIsPickerOpen}
-          currentLetters={letter}
-          onSelect={handleLetterSelect}
-        >
-          <button
-            className="absolute opacity-0 pointer-events-none"
-            style={{
-              left: `${config.position.x}px`,
-              top: `${config.position.y}px`,
-            }}
-            aria-hidden="true"
-          />
-        </LetterPicker>
-      )}
     </>
   );
 }
