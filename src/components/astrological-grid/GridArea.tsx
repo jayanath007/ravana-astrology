@@ -14,9 +14,10 @@ interface GridAreaProps {
   isSelected?: boolean;
   onSelect?: (areaId: number) => void;
   selectedPlanet?: string | null;
+  aspectingPlanets?: string[];
 }
 
-export function GridArea({ config, letter, offsetValue, planetSigns, isSelected = false, onSelect, selectedPlanet = null }: GridAreaProps) {
+export function GridArea({ config, letter, offsetValue, planetSigns, isSelected = false, onSelect, selectedPlanet = null, aspectingPlanets = [] }: GridAreaProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   // Calculate zodiac sign: getZodiacSignByAreaId((x - 1) + currentValue)
@@ -230,10 +231,11 @@ export function GridArea({ config, letter, offsetValue, planetSigns, isSelected 
                   const xOffset = (col - (charsInThisRow - 1) / 2) * charSpacing;
                   const yOffset = row * lineHeight;
                   const isHighlighted = selectedPlanet === item;
+                  const isAspecting = aspectingPlanets.includes(item);
 
                   return (
                     <g key={`${item}-${index}`}>
-                      {/* Highlight background square for selected planet */}
+                      {/* Highlight background square for selected planet (yellow) */}
                       {isHighlighted && (
                         <rect
                           x={config.position.x + xOffset - parseInt(INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE) / 2}
@@ -242,6 +244,17 @@ export function GridArea({ config, letter, offsetValue, planetSigns, isSelected 
                           height={INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE}
                           className={TAILWIND_CLASSES.planetHighlight}
                           opacity={INTERACTION_COLORS.PLANET_HIGHLIGHT_OPACITY}
+                        />
+                      )}
+                      {/* Highlight background square for aspecting planet (orange) */}
+                      {!isHighlighted && isAspecting && (
+                        <rect
+                          x={config.position.x + xOffset - parseInt(INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE) / 2}
+                          y={startY + yOffset - parseInt(INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE) / 2}
+                          width={INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE}
+                          height={INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE}
+                          className={TAILWIND_CLASSES.aspectingHighlight}
+                          opacity={INTERACTION_COLORS.ASPECTING_HIGHLIGHT_OPACITY}
                         />
                       )}
                       <text

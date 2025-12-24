@@ -66,6 +66,11 @@ export const INTERACTION_COLORS = {
   PLANET_HIGHLIGHT_DARK: '#eab308',     // yellow-500 - Medium yellow highlight square (dark mode)
   PLANET_HIGHLIGHT_OPACITY: '0.8',      // 80% opacity for highlight squares
   PLANET_HIGHLIGHT_SIZE: '20',          // 20px size for highlight squares
+
+  // Aspecting planet highlight (when area is selected and planet aspects it)
+  ASPECTING_HIGHLIGHT_LIGHT: '#fed7aa', // orange-200 - Light orange highlight square (light mode)
+  ASPECTING_HIGHLIGHT_DARK: '#fb923c',  // orange-400 - Medium orange highlight square (dark mode)
+  ASPECTING_HIGHLIGHT_OPACITY: '0.7',   // 70% opacity for aspecting highlight squares
 } as const;
 
 // ============================================================================
@@ -129,12 +134,14 @@ export const TAILWIND_CLASSES = {
 
   // Planet highlight classes
   planetHighlight: 'fill-yellow-200 dark:fill-yellow-500',
+  aspectingHighlight: 'fill-orange-200 dark:fill-orange-400',
 
   // Button classes
   button: {
     default: 'bg-white dark:bg-neutral-800 border-green-700 dark:border-green-600',
     hover: 'hover:bg-green-50 dark:hover:bg-green-900',
     selected: 'bg-green-600 dark:bg-green-700 border-green-700 dark:border-green-600 text-white',
+    aspecting: 'bg-yellow-100 dark:bg-yellow-900 border-yellow-600 dark:border-yellow-500 text-yellow-900 dark:text-yellow-100',
   },
 
   // UI element classes

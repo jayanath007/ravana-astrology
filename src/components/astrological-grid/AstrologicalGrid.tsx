@@ -28,6 +28,14 @@ export function AstrologicalGrid() {
     return grahaDrishtiMapToObject(drishtiMap);
   }, [planetSigns]);
 
+  // Get planets that aspect the selected area
+  const aspectingPlanets = useMemo(() => {
+    if (!selectedAreaId || !grahaDrishtiData) {
+      return [];
+    }
+    return grahaDrishtiData[selectedAreaId] || [];
+  }, [selectedAreaId, grahaDrishtiData]);
+
   const handleAreaSelect = (areaId: number) => {
     // Toggle selection: if clicking the same area, deselect it
     setSelectedAreaId(prevId => prevId === areaId ? null : areaId);
@@ -97,6 +105,7 @@ export function AstrologicalGrid() {
                 isSelected={selectedAreaId === config.id}
                 onSelect={handleAreaSelect}
                 selectedPlanet={selectedPlanet}
+                aspectingPlanets={aspectingPlanets}
               />
             ))}
           </svg>
@@ -114,20 +123,27 @@ export function AstrologicalGrid() {
             { symbol: 'ශ', name: 'ශනි (Saturn)' },
             { symbol: 'රා', name: 'රහු (Rahu)' },
             { symbol: 'කේ', name: 'කේතු (Ketu)' },
-          ].map((planet) => (
-            <button
-              key={planet.symbol}
-              onClick={() => handlePlanetSelect(planet.symbol)}
-              className={`px-6 py-3 border-2 rounded-lg transition-colors font-semibold text-lg ${
-                selectedPlanet === planet.symbol
-                  ? TAILWIND_CLASSES.button.selected
-                  : `${TAILWIND_CLASSES.button.default} ${TAILWIND_CLASSES.button.hover}`
-              }`}
-              title={planet.name}
-            >
-              {planet.symbol}
-            </button>
-          ))}
+          ].map((planet) => {
+            const isSelected = selectedPlanet === planet.symbol;
+            const isAspecting = aspectingPlanets.includes(planet.symbol);
+
+            return (
+              <button
+                key={planet.symbol}
+                onClick={() => handlePlanetSelect(planet.symbol)}
+                className={`px-6 py-3 border-2 rounded-lg transition-colors font-semibold text-lg ${
+                  isSelected
+                    ? TAILWIND_CLASSES.button.selected
+                    : isAspecting
+                    ? TAILWIND_CLASSES.button.aspecting
+                    : `${TAILWIND_CLASSES.button.default} ${TAILWIND_CLASSES.button.hover}`
+                }`}
+                title={planet.name}
+              >
+                {planet.symbol}
+              </button>
+            );
+          })}
         </div>
 
         {/* Graha Drishti Display */}
