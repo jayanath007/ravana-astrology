@@ -1,14 +1,153 @@
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AstrologicalGrid } from '@/components/astrological-grid/AstrologicalGrid';
-import type { PlanetSign } from '@/components/birth-details/BirthDetailsForm';
+import type { PlanetSign, BirthDetails } from '@/components/birth-details/BirthDetailsForm';
 import { TAILWIND_CLASSES } from '@/styles/theme-colors';
 
 export function DivisionChartsPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Rasi chart data (D1) from location state
   const zodiacNumber = location.state?.zodiacNumber as number | undefined;
   const planetSigns = location.state?.planetSigns as PlanetSign[] | undefined;
+  const birthDetails = location.state?.birthDetails as BirthDetails | undefined;
+
+  // Navamsa chart data (D9) - to be fetched
+  const [navamsaZodiacNumber, setNavamsaZodiacNumber] = useState<number | undefined>();
+  const [navamsaPlanetSigns, setNavamsaPlanetSigns] = useState<PlanetSign[] | undefined>();
+  const [isLoadingNavamsa, setIsLoadingNavamsa] = useState(false);
+  const [navamsaError, setNavamsaError] = useState<string | null>(null);
+
+  // Thathkaala Kendra chart data - to be fetched
+  const [drekkanaZodiacNumber, setDrekkanaZodiacNumber] = useState<number | undefined>();
+  const [drekkanaPlanetSigns, setDrekkanaPlanetSigns] = useState<PlanetSign[] | undefined>();
+  const [isLoadingDrekkana, setIsLoadingDrekkana] = useState(false);
+  const [drekkanaError, setDrekkanaError] = useState<string | null>(null);
+
+  // Fetch Navamsa chart data on component mount
+  useEffect(() => {
+    const fetchNavamsaData = async () => {
+      if (!birthDetails) {
+        setNavamsaError('Birth details not available');
+        return;
+      }
+
+      setIsLoadingNavamsa(true);
+      setNavamsaError(null);
+
+      try {
+        // Call both Navamsa APIs in parallel
+        const [navamsaAscendantResponse, navamsaSignsResponse] = await Promise.all([
+          fetch('http://localhost:5188/api/birthchart/navamsa-ascendant', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(birthDetails),
+          }),
+          fetch('http://localhost:5188/api/birthchart/navamsa-signs', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(birthDetails),
+          })
+        ]);
+
+        if (!navamsaAscendantResponse.ok) {
+          throw new Error(`Navamsa ascendant API failed: ${navamsaAscendantResponse.status}`);
+        }
+
+        if (!navamsaSignsResponse.ok) {
+          throw new Error(`Navamsa signs API failed: ${navamsaSignsResponse.status}`);
+        }
+
+        const navamsaAscendantData = await navamsaAscendantResponse.json();
+        const navamsaSignsData: PlanetSign[] = await navamsaSignsResponse.json();
+
+        setNavamsaZodiacNumber(navamsaAscendantData.sign);
+        setNavamsaPlanetSigns(navamsaSignsData);
+      } catch (err) {
+        setNavamsaError(err instanceof Error ? err.message : 'Failed to fetch Navamsa chart');
+        console.error('Error fetching Navamsa chart:', err);
+      } finally {
+        setIsLoadingNavamsa(false);
+      }
+    };
+
+    fetchNavamsaData();
+  }, [birthDetails]);
+
+  // Fetch Thathkaala Kendra chart data on component mount
+  useEffect(() => {
+    const fetchDrekkanaData = async () => {
+      if (!birthDetails) {
+        setDrekkanaError('Birth details not available');
+        return;
+      }
+
+      setIsLoadingDrekkana(true);
+      setDrekkanaError(null);
+
+      try {
+        // Get current date and time
+        const now = new Date();
+        const currentDate = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+        const currentTime = now.toTimeString().slice(0, 5); // Format: HH:mm
+
+        // Create request body with current date/time for ascendant
+        const currentDateTimeRequest = {
+          birthDate: currentDate,
+          birthTime: currentTime,
+          latitude: birthDetails.latitude,
+          longitude: birthDetails.longitude,
+          timeZoneId: birthDetails.timeZoneId
+        };
+
+        // Call both APIs in parallel
+        // Ascendant: use current date/time
+        // Planet signs: use birth details with planet-signs endpoint
+        const [ascendantResponse, planetSignsResponse] = await Promise.all([
+          fetch('http://localhost:5188/api/birthchart/ascendant', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(currentDateTimeRequest),
+          }),
+          fetch('http://localhost:5188/api/birthchart/planet-signs', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(birthDetails),
+          })
+        ]);
+
+        if (!ascendantResponse.ok) {
+          throw new Error(`Thathkaala Kendra ascendant API failed: ${ascendantResponse.status}`);
+        }
+
+        if (!planetSignsResponse.ok) {
+          throw new Error(`Thathkaala Kendra planet signs API failed: ${planetSignsResponse.status}`);
+        }
+
+        const ascendantData = await ascendantResponse.json();
+        const planetSignsData: PlanetSign[] = await planetSignsResponse.json();
+
+        setDrekkanaZodiacNumber(ascendantData.sign);
+        setDrekkanaPlanetSigns(planetSignsData);
+      } catch (err) {
+        setDrekkanaError(err instanceof Error ? err.message : 'Failed to fetch Thathkaala Kendra chart');
+        console.error('Error fetching Thathkaala Kendra chart:', err);
+      } finally {
+        setIsLoadingDrekkana(false);
+      }
+    };
+
+    fetchDrekkanaData();
+  }, [birthDetails]);
 
   return (
     <div className="container mx-auto p-4 min-h-screen">
@@ -49,25 +188,49 @@ export function DivisionChartsPage() {
             Navamsa Chart (D9)
           </h2>
           <div className="flex-1">
-            <AstrologicalGrid
-              zodiacNumber={zodiacNumber}
-              planetSigns={planetSigns}
-              showBackButton={false}
-            />
+            {isLoadingNavamsa ? (
+              <div className="flex items-center justify-center h-64 text-neutral-600 dark:text-neutral-400">
+                Loading Navamsa chart...
+              </div>
+            ) : navamsaError ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="p-4 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 rounded-md text-red-700 dark:text-red-300 text-sm">
+                  {navamsaError}
+                </div>
+              </div>
+            ) : (
+              <AstrologicalGrid
+                zodiacNumber={navamsaZodiacNumber}
+                planetSigns={navamsaPlanetSigns}
+                showBackButton={false}
+              />
+            )}
           </div>
         </div>
 
-        {/* Grid 3 - Drekkana Chart (D3) */}
+        {/* Grid 3 - Thathkaala Kendra */}
         <div className="flex flex-col">
           <h2 className="text-lg font-semibold text-center mb-3 text-neutral-800 dark:text-neutral-200">
-            Drekkana Chart (D3)
+            Thathkaala Kendra
           </h2>
           <div className="flex-1">
-            <AstrologicalGrid
-              zodiacNumber={zodiacNumber}
-              planetSigns={planetSigns}
-              showBackButton={false}
-            />
+            {isLoadingDrekkana ? (
+              <div className="flex items-center justify-center h-64 text-neutral-600 dark:text-neutral-400">
+                Loading Thathkaala Kendra...
+              </div>
+            ) : drekkanaError ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="p-4 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 rounded-md text-red-700 dark:text-red-300 text-sm">
+                  {drekkanaError}
+                </div>
+              </div>
+            ) : (
+              <AstrologicalGrid
+                zodiacNumber={drekkanaZodiacNumber}
+                planetSigns={drekkanaPlanetSigns}
+                showBackButton={false}
+              />
+            )}
           </div>
         </div>
       </div>
