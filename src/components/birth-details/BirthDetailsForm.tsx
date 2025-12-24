@@ -83,6 +83,61 @@ export function BirthDetailsForm() {
     }
   };
 
+  const handleDivisionCharts = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Call both APIs in parallel
+      const [ascendantResponse, planetSignsResponse] = await Promise.all([
+        fetch('http://localhost:5188/api/birthchart/ascendant', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        }),
+        fetch('http://localhost:5188/api/birthchart/planet-signs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        })
+      ]);
+
+      if (!ascendantResponse.ok) {
+        throw new Error(`Ascendant API request failed: ${ascendantResponse.status} ${ascendantResponse.statusText}`);
+      }
+
+      if (!planetSignsResponse.ok) {
+        throw new Error(`Planet signs API request failed: ${planetSignsResponse.status} ${planetSignsResponse.statusText}`);
+      }
+
+      // Get the zodiac sign number from the ascendant response
+      const ascendantData = await ascendantResponse.json();
+      const zodiacNumber = ascendantData.sign;
+
+      // Get the planet signs array from the planet-signs response
+      const planetSigns: PlanetSign[] = await planetSignsResponse.json();
+
+      // Navigate to the division charts page with all data
+      navigate('/divisions', {
+        state: {
+          birthDetails: formData,
+          zodiacNumber: zodiacNumber,
+          planetSigns: planetSigns
+        }
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to calculate birth chart');
+      console.error('Error calculating birth chart:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -196,14 +251,25 @@ export function BirthDetailsForm() {
             </div>
           )}
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-semibold rounded-md transition-colors mt-2"
-          >
-            {isLoading ? 'Calculating...' : 'Calculate Birth Chart'}
-          </button>
+          {/* Submit Buttons */}
+          <div className="flex flex-col gap-3 mt-2">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-semibold rounded-md transition-colors"
+            >
+              {isLoading ? 'Calculating...' : 'Calculate Birth Chart'}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDivisionCharts}
+              disabled={isLoading}
+              className="px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed text-white font-semibold rounded-md transition-colors"
+            >
+              {isLoading ? 'Calculating...' : 'View Division Charts'}
+            </button>
+          </div>
         </form>
       </div>
     </div>

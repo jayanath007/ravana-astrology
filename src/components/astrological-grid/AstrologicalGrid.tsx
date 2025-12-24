@@ -23,11 +23,23 @@ const ZODIAC_LORDS: Record<number, string> = {
   12: 'ගු' // Pisces (මීන) → ගුරු (Jupiter)
 };
 
-export function AstrologicalGrid() {
+interface AstrologicalGridProps {
+  zodiacNumber?: number;
+  planetSigns?: PlanetSign[];
+  showBackButton?: boolean;
+}
+
+export function AstrologicalGrid({
+  zodiacNumber: propZodiacNumber,
+  planetSigns: propPlanetSigns,
+  showBackButton = true
+}: AstrologicalGridProps = {}) {
   const location = useLocation();
   const navigate = useNavigate();
-  const zodiacNumber = location.state?.zodiacNumber as number | undefined;
-  const planetSigns = location.state?.planetSigns as PlanetSign[] | undefined;
+
+  // Use props if provided, otherwise fall back to location state
+  const zodiacNumber = propZodiacNumber ?? location.state?.zodiacNumber as number | undefined;
+  const planetSigns = propPlanetSigns ?? location.state?.planetSigns as PlanetSign[] | undefined;
 
   const { getLetter, initializeGrid } = useGridState();
   const [offsetValue] = useState(zodiacNumber || 1);
@@ -104,14 +116,16 @@ export function AstrologicalGrid() {
 
   return (
     <div className="container mx-auto p-4 min-h-screen">
-      <div className="mb-6">
-        <button
-          onClick={() => navigate('/')}
-          className={`px-4 py-2 font-medium rounded-md transition-colors ${TAILWIND_CLASSES.ui.backButton}`}
-        >
-          ← Back to Input
-        </button>
-      </div>
+      {showBackButton && (
+        <div className="mb-6">
+          <button
+            onClick={() => navigate('/')}
+            className={`px-4 py-2 font-medium rounded-md transition-colors ${TAILWIND_CLASSES.ui.backButton}`}
+          >
+            ← Back to Input
+          </button>
+        </div>
+      )}
 
       <div className="flex flex-col items-center justify-center gap-6">
         {/* Grid */}
