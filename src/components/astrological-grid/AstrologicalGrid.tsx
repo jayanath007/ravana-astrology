@@ -1,19 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGridState } from '@/hooks/useGridState';
 import { GRID_CONFIG } from './grid-config';
 import { GridArea } from './GridArea';
-import type { BirthDetails } from '@/components/birth-details/BirthDetailsForm';
+import type { BirthDetails, PlanetSign } from '@/components/birth-details/BirthDetailsForm';
 
 export function AstrologicalGrid() {
   const location = useLocation();
   const navigate = useNavigate();
   const birthDetails = location.state?.birthDetails as BirthDetails | undefined;
   const zodiacNumber = location.state?.zodiacNumber as number | undefined;
+  const planetSigns = location.state?.planetSigns as PlanetSign[] | undefined;
 
-  const { getLetter, setLetter } = useGridState();
+  const { getLetter, setLetter, initializeGrid } = useGridState();
   const [offsetValue, setOffsetValue] = useState(zodiacNumber || 1);
   const [inputValue, setInputValue] = useState(String(zodiacNumber || 1));
+
+  // Map planets to their corresponding areas when component mounts or when planetSigns/offsetValue changes
+  useEffect(() => {
+    if (planetSigns && planetSigns.length > 0) {
+      // Build the grid state from planet signs
+      const newGridState: { [key: number]: string[] } = {};
+
+      planetSigns.forEach(({ planet, sign }) => {
+        // Calculate which area ID corresponds to this sign based on the offset
+        // Formula: areaId = (sign - offsetValue + 1) % 12
+        // If result is 0 or negative, adjust it
+        let areaId = (sign - offsetValue + 1);
+        while (areaId <= 0) {
+          areaId += 12;
+        }
+        while (areaId > 12) {
+          areaId -= 12;
+        }
+
+        // Add the planet to this area
+        if (!newGridState[areaId]) {
+          newGridState[areaId] = [];
+        }
+        newGridState[areaId].push(planet);
+      });
+
+      // Initialize the grid with all planets at once
+      initializeGrid(newGridState);
+    }
+  }, [planetSigns, offsetValue, initializeGrid]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,6 +139,7 @@ export function AstrologicalGrid() {
                 letter={getLetter(config.id)}
                 onLetterSelect={setLetter}
                 offsetValue={offsetValue}
+                planetSigns={planetSigns}
               />
             ))}
           </svg>

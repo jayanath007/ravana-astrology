@@ -9,6 +9,11 @@ export interface BirthDetails {
   timeZoneId: string;
 }
 
+export interface PlanetSign {
+  planet: string;
+  sign: number;
+}
+
 export function BirthDetailsForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<BirthDetails>({
@@ -27,28 +32,45 @@ export function BirthDetailsForm() {
     setError(null);
 
     try {
-      // Call the backend API
-      const response = await fetch('http://localhost:5188/api/birthchart/ascendant', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      // Call both APIs in parallel
+      const [ascendantResponse, planetSignsResponse] = await Promise.all([
+        fetch('http://localhost:5188/api/birthchart/ascendant', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        }),
+        fetch('http://localhost:5188/api/birthchart/planet-signs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        })
+      ]);
 
-      if (!response.ok) {
-        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      if (!ascendantResponse.ok) {
+        throw new Error(`Ascendant API request failed: ${ascendantResponse.status} ${ascendantResponse.statusText}`);
       }
 
-      // Get the zodiac sign number from the response
-      const data = await response.json();
-      const zodiacNumber = data.sign;
+      if (!planetSignsResponse.ok) {
+        throw new Error(`Planet signs API request failed: ${planetSignsResponse.status} ${planetSignsResponse.statusText}`);
+      }
 
-      // Navigate to the astrological grid page with birth details and zodiac number
+      // Get the zodiac sign number from the ascendant response
+      const ascendantData = await ascendantResponse.json();
+      const zodiacNumber = ascendantData.sign;
+
+      // Get the planet signs array from the planet-signs response
+      const planetSigns: PlanetSign[] = await planetSignsResponse.json();
+
+      // Navigate to the astrological grid page with all data
       navigate('/chart', {
         state: {
           birthDetails: formData,
-          zodiacNumber: zodiacNumber
+          zodiacNumber: zodiacNumber,
+          planetSigns: planetSigns
         }
       });
     } catch (err) {

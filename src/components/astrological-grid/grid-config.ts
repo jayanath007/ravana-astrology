@@ -1,5 +1,4 @@
 import type { AreaConfig } from './types';
-import { getZodiacSignByAreaId } from './zodiac-config';
 
 // Grid is 300x300 viewBox, divided into 3x3 grid (100x100 cells)
 // Row 1: y=0-100, Row 2: y=100-200, Row 3: y=200-300

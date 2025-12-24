@@ -3,15 +3,18 @@ import type { AreaConfig } from './types';
 import { LetterPicker } from './LetterPicker';
 import { cn } from '@/lib/utils';
 import { getZodiacSignByAreaId } from './zodiac-config';
+import { getPlanetColor } from '@/utils/planet-colors';
+import type { PlanetSign } from '@/components/birth-details/BirthDetailsForm';
 
 interface GridAreaProps {
   config: AreaConfig;
   letter: string[];
   onLetterSelect: (areaId: number, letter: string | null) => void;
   offsetValue: number;
+  planetSigns?: PlanetSign[];
 }
 
-export function GridArea({ config, letter, onLetterSelect, offsetValue }: GridAreaProps) {
+export function GridArea({ config, letter, onLetterSelect, offsetValue, planetSigns }: GridAreaProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
 
@@ -89,8 +92,6 @@ export function GridArea({ config, letter, onLetterSelect, offsetValue }: GridAr
       );
     }
   };
-
-  const displayLetters = config.isCenter ? config.id.toString() : letter.join('');
 
   return (
     <>
@@ -195,22 +196,45 @@ export function GridArea({ config, letter, onLetterSelect, offsetValue }: GridAr
           </text>
         )}
 
-        {/* Display letters or ID for center */}
+        {/* Display letters/planets or ID for center */}
         {(hasLetters || config.isCenter) && (
-          <text
-            x={config.position.x}
-            y={config.isCenter ? config.position.y : config.position.y + 10}
-            textAnchor="middle"
-            dominantBaseline="central"
-            className={cn(
-              'pointer-events-none font-semibold select-none',
-              config.isCenter
-                ? 'text-sm fill-neutral-500 dark:fill-neutral-400'
-                : 'text-base fill-neutral-900 dark:fill-neutral-100'
+          <>
+            {config.isCenter ? (
+              // Center area displays ID
+              <text
+                x={config.position.x}
+                y={config.position.y}
+                textAnchor="middle"
+                dominantBaseline="central"
+                className="pointer-events-none font-semibold select-none text-sm fill-neutral-500 dark:fill-neutral-400"
+              >
+                {config.id}
+              </text>
+            ) : (
+              // Non-center areas: render each planet/letter with individual color
+              letter.map((item, index) => {
+                // Find the original sign for this planet
+                const planetData = planetSigns?.find(ps => ps.planet === item);
+                const color = planetData
+                  ? getPlanetColor(item, planetData.sign)
+                  : undefined;
+
+                return (
+                  <text
+                    key={`${item}-${index}`}
+                    x={config.position.x + (index * 15) - ((letter.length - 1) * 7.5)}
+                    y={config.position.y + 10}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    className="pointer-events-none font-semibold select-none text-base"
+                    style={{ fill: color }}
+                  >
+                    {item}
+                  </text>
+                );
+              })
             )}
-          >
-            {displayLetters}
-          </text>
+          </>
         )}
       </g>
 

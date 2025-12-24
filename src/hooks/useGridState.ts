@@ -45,5 +45,9 @@ export function useGridState() {
     setGridState({});
   }, []);
 
-  return { gridState, setLetter, getLetter, clearAll };
+  const initializeGrid = useCallback((initialState: GridState) => {
+    setGridState(initialState);
+  }, []);
+
+  return { gridState, setLetter, getLetter, clearAll, initializeGrid };
 }
