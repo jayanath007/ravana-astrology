@@ -16,7 +16,6 @@ export function AstrologicalGrid() {
   const { getLetter, initializeGrid } = useGridState();
   const [offsetValue] = useState(zodiacNumber || 1);
   const [selectedAreaId, setSelectedAreaId] = useState<number | null>(null);
-  const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null);
 
   // Calculate Graha Drishti from planet signs
   const grahaDrishtiData = useMemo(() => {
@@ -39,11 +38,6 @@ export function AstrologicalGrid() {
   const handleAreaSelect = (areaId: number) => {
     // Toggle selection: if clicking the same area, deselect it
     setSelectedAreaId(prevId => prevId === areaId ? null : areaId);
-  };
-
-  const handlePlanetSelect = (planet: string) => {
-    // Toggle selection: if clicking the same planet, deselect it
-    setSelectedPlanet(prevPlanet => prevPlanet === planet ? null : planet);
   };
 
   // Map planets to their corresponding areas when component mounts or when planetSigns/offsetValue changes
@@ -104,64 +98,12 @@ export function AstrologicalGrid() {
                 planetSigns={planetSigns}
                 isSelected={selectedAreaId === config.id}
                 onSelect={handleAreaSelect}
-                selectedPlanet={selectedPlanet}
                 aspectingPlanets={aspectingPlanets}
               />
             ))}
           </svg>
         </div>
 
-        {/* Planet Buttons */}
-        <div className="flex flex-wrap gap-3 justify-center max-w-2xl">
-          {[
-            { symbol: 'ර', name: 'සූර්ය (Sun)' },
-            { symbol: 'ච', name: 'චන්ද්‍ර (Moon)' },
-            { symbol: 'කු', name: 'මංගල (Mars)' },
-            { symbol: 'බු', name: 'බුධ (Mercury)' },
-            { symbol: 'ගු', name: 'ගුරු (Jupiter)' },
-            { symbol: 'ශු', name: 'ශුක්‍ර (Venus)' },
-            { symbol: 'ශ', name: 'ශනි (Saturn)' },
-            { symbol: 'රා', name: 'රහු (Rahu)' },
-            { symbol: 'කේ', name: 'කේතු (Ketu)' },
-          ].map((planet) => {
-            const isSelected = selectedPlanet === planet.symbol;
-            const isAspecting = aspectingPlanets.includes(planet.symbol);
-
-            return (
-              <button
-                key={planet.symbol}
-                onClick={() => handlePlanetSelect(planet.symbol)}
-                className={`px-6 py-3 border-2 rounded-lg transition-colors font-semibold text-lg ${
-                  isSelected
-                    ? TAILWIND_CLASSES.button.selected
-                    : isAspecting
-                    ? TAILWIND_CLASSES.button.aspecting
-                    : `${TAILWIND_CLASSES.button.default} ${TAILWIND_CLASSES.button.hover}`
-                }`}
-                title={planet.name}
-              >
-                {planet.symbol}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Graha Drishti Display */}
-        {grahaDrishtiData && (
-          <section
-            className={`w-full max-w-2xl p-4 ${TAILWIND_CLASSES.debugDisplay.container}`}
-            aria-label="Graha Drishti Aspects Display"
-          >
-            <h3 className={`mb-2 text-sm ${TAILWIND_CLASSES.debugDisplay.title}`}>
-              Graha Drishti (Planetary Aspects)
-            </h3>
-            <pre className={`p-3 rounded overflow-x-auto ${TAILWIND_CLASSES.debugDisplay.code}`}>
-              <code>
-                {JSON.stringify(grahaDrishtiData, null, 2)}
-              </code>
-            </pre>
-          </section>
-        )}
       </div>
     </div>
   );

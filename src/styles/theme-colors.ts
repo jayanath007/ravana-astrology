@@ -61,39 +61,11 @@ export const GRID_COLORS = {
 // ============================================================================
 
 export const INTERACTION_COLORS = {
-  // Planet character highlight (when button is clicked)
-  PLANET_HIGHLIGHT_LIGHT: '#fef08a',    // yellow-200 - Light yellow highlight square (light mode)
-  PLANET_HIGHLIGHT_DARK: '#eab308',     // yellow-500 - Medium yellow highlight square (dark mode)
-  PLANET_HIGHLIGHT_OPACITY: '0.8',      // 80% opacity for highlight squares
+  // Highlight square size
   PLANET_HIGHLIGHT_SIZE: '20',          // 20px size for highlight squares
 
   // Aspecting planet highlight (when area is selected and planet aspects it)
-  ASPECTING_HIGHLIGHT_LIGHT: '#fed7aa', // orange-200 - Light orange highlight square (light mode)
-  ASPECTING_HIGHLIGHT_DARK: '#fb923c',  // orange-400 - Medium orange highlight square (dark mode)
   ASPECTING_HIGHLIGHT_OPACITY: '0.7',   // 70% opacity for aspecting highlight squares
-} as const;
-
-// ============================================================================
-// BUTTON COLORS - Planet selection buttons
-// ============================================================================
-
-export const BUTTON_COLORS = {
-  // Default button state
-  BG_DEFAULT_LIGHT: '#ffffff',          // white - Button background (light mode)
-  BG_DEFAULT_DARK: '#262626',           // neutral-800 - Button background (dark mode)
-  BORDER_DEFAULT_LIGHT: '#15803d',      // green-700 - Button border (light mode)
-  BORDER_DEFAULT_DARK: '#16a34a',       // green-600 - Button border (dark mode)
-
-  // Hover button state
-  BG_HOVER_LIGHT: '#f0fdf4',            // green-50 - Button background on hover (light mode)
-  BG_HOVER_DARK: '#14532d',             // green-900 - Button background on hover (dark mode)
-
-  // Selected button state
-  BG_SELECTED_LIGHT: '#16a34a',         // green-600 - Button background when selected (light mode)
-  BG_SELECTED_DARK: '#15803d',          // green-700 - Button background when selected (dark mode)
-  BORDER_SELECTED_LIGHT: '#15803d',     // green-700 - Button border when selected (light mode)
-  BORDER_SELECTED_DARK: '#16a34a',      // green-600 - Button border when selected (dark mode)
-  TEXT_SELECTED: '#ffffff',             // white - Button text when selected
 } as const;
 
 // ============================================================================
@@ -132,29 +104,13 @@ export const TAILWIND_CLASSES = {
     borderWidth: 'stroke-2',
   },
 
-  // Planet highlight classes
-  planetHighlight: 'fill-yellow-200 dark:fill-yellow-500',
+  // Aspecting planet highlight class
   aspectingHighlight: 'fill-orange-200 dark:fill-orange-400',
-
-  // Button classes
-  button: {
-    default: 'bg-white dark:bg-neutral-800 border-green-700 dark:border-green-600',
-    hover: 'hover:bg-green-50 dark:hover:bg-green-900',
-    selected: 'bg-green-600 dark:bg-green-700 border-green-700 dark:border-green-600 text-white',
-    aspecting: 'bg-yellow-100 dark:bg-yellow-900 border-yellow-600 dark:border-yellow-500 text-yellow-900 dark:text-yellow-100',
-  },
 
   // UI element classes
   ui: {
     backButton: 'bg-neutral-600 hover:bg-neutral-700 text-white',
     gridBorder: 'border-neutral-300 dark:border-neutral-700',
-  },
-
-  // Debug/data display classes
-  debugDisplay: {
-    container: 'bg-neutral-100 dark:bg-neutral-800 border-2 border-neutral-300 dark:border-neutral-700 rounded-lg',
-    title: 'text-neutral-700 dark:text-neutral-300 font-semibold',
-    code: 'text-neutral-900 dark:text-neutral-100 bg-neutral-50 dark:bg-neutral-900 font-mono text-xs',
   },
 } as const;
 
@@ -166,7 +122,6 @@ export const THEME = {
   astrological: ASTROLOGICAL_COLORS,
   grid: GRID_COLORS,
   interaction: INTERACTION_COLORS,
-  button: BUTTON_COLORS,
   ui: UI_COLORS,
   classes: TAILWIND_CLASSES,
 } as const;

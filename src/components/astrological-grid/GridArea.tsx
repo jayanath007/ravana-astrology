@@ -13,11 +13,10 @@ interface GridAreaProps {
   planetSigns?: PlanetSign[];
   isSelected?: boolean;
   onSelect?: (areaId: number) => void;
-  selectedPlanet?: string | null;
   aspectingPlanets?: string[];
 }
 
-export function GridArea({ config, letter, offsetValue, planetSigns, isSelected = false, onSelect, selectedPlanet = null, aspectingPlanets = [] }: GridAreaProps) {
+export function GridArea({ config, letter, offsetValue, planetSigns, isSelected = false, onSelect, aspectingPlanets = [] }: GridAreaProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   // Calculate zodiac sign: getZodiacSignByAreaId((x - 1) + currentValue)
@@ -230,24 +229,12 @@ export function GridArea({ config, letter, offsetValue, planetSigns, isSelected 
                   // Calculate x position (centered within the row)
                   const xOffset = (col - (charsInThisRow - 1) / 2) * charSpacing;
                   const yOffset = row * lineHeight;
-                  const isHighlighted = selectedPlanet === item;
                   const isAspecting = aspectingPlanets.includes(item);
 
                   return (
                     <g key={`${item}-${index}`}>
-                      {/* Highlight background square for selected planet (yellow) */}
-                      {isHighlighted && (
-                        <rect
-                          x={config.position.x + xOffset - parseInt(INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE) / 2}
-                          y={startY + yOffset - parseInt(INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE) / 2}
-                          width={INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE}
-                          height={INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE}
-                          className={TAILWIND_CLASSES.planetHighlight}
-                          opacity={INTERACTION_COLORS.PLANET_HIGHLIGHT_OPACITY}
-                        />
-                      )}
                       {/* Highlight background square for aspecting planet (orange) */}
-                      {!isHighlighted && isAspecting && (
+                      {isAspecting && (
                         <rect
                           x={config.position.x + xOffset - parseInt(INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE) / 2}
                           y={startY + yOffset - parseInt(INTERACTION_COLORS.PLANET_HIGHLIGHT_SIZE) / 2}
