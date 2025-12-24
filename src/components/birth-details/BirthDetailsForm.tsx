@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getBirthChartData } from '@/services/birthChartService';
+import { clearBirthDetails } from '@/utils/sessionStorage';
 import type { BirthDetails, PlanetSign } from '@/types/birthChart';
 
 // Re-export types for backward compatibility with existing imports
@@ -47,6 +48,9 @@ export function BirthDetailsForm() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+
+    // Clear any previously stored birth details
+    clearBirthDetails();
 
     try {
       // Fetch birth chart data using service layer

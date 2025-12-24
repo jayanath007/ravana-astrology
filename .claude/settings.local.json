@@ -15,7 +15,8 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\nStandardize square areas and update center display\n\n- Make areas 0, 1, 4, 7, and 10 all the same size \\(100x100 squares\\)\n- Change area 1 from rectangle to square\n- Change area 7 from rectangle to square\n- Update center area \\(0\\) to display ''0'' instead of ''M''\n- Adjust positioning for proper grid alignment\n- All square areas now uniformly sized at 100x100\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git push:*)",
       "WebFetch(domain:thenounproject.com)",
-      "Bash(node extract-svg-data.js:*)"
+      "Bash(node extract-svg-data.js:*)",
+      "Bash(npm run lint:*)"
     ]
   }
 }

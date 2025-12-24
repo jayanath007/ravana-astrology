@@ -1,95 +1,109 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { AstrologicalGrid } from '@/components/astrological-grid/AstrologicalGrid';
-import { getNavamsaChartData, getThathkaalaKendraChartData } from '@/services/birthChartService';
+import { ChartCard } from './ChartCard';
+import { useDivisionChart } from '@/hooks/useDivisionChart';
+import { saveBirthDetails, loadBirthDetails } from '@/utils/sessionStorage';
 import type { PlanetSign, BirthDetails } from '@/types/birthChart';
 import { TAILWIND_CLASSES } from '@/styles/theme-colors';
 
-export function DivisionChartsPage() {
+/**
+ * Props for DivisionChartsPage component
+ */
+interface DivisionChartsPageProps {
+  birthDetails?: BirthDetails;
+  rasiChartData?: {
+    zodiacNumber: number;
+    planetSigns: PlanetSign[];
+  };
+}
+
+/**
+ * Division Charts Page component
+ *
+ * Displays three astrological charts side by side:
+ * - Rasi Chart (D1): Birth chart
+ * - Navamsa Chart (D9): Divisional chart for spiritual analysis
+ * - Thathkaala Kendra: Chart with current time ascendant
+ *
+ * Supports data from props, location state, or sessionStorage (in that priority order).
+ * Implements accessibility features and error handling best practices.
+ *
+ * @param props - Component props (optional, falls back to location state)
+ */
+export function DivisionChartsPage({
+  birthDetails: propBirthDetails,
+  rasiChartData: propRasiData,
+}: DivisionChartsPageProps = {}) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Rasi chart data (D1) from location state
-  const zodiacNumber = location.state?.zodiacNumber as number | undefined;
-  const planetSigns = location.state?.planetSigns as PlanetSign[] | undefined;
-  const birthDetails = location.state?.birthDetails as BirthDetails | undefined;
+  // Data source priority: props → location state → sessionStorage
+  const savedDetails = loadBirthDetails();
+  const birthDetails =
+    propBirthDetails ?? location.state?.birthDetails ?? savedDetails;
 
-  // Navamsa chart data (D9) - to be fetched
-  const [navamsaZodiacNumber, setNavamsaZodiacNumber] = useState<number | undefined>();
-  const [navamsaPlanetSigns, setNavamsaPlanetSigns] = useState<PlanetSign[] | undefined>();
-  const [isLoadingNavamsa, setIsLoadingNavamsa] = useState(false);
-  const [navamsaError, setNavamsaError] = useState<string | null>(null);
+  const rasiZodiacNumber =
+    propRasiData?.zodiacNumber ?? (location.state?.zodiacNumber as number | undefined);
 
-  // Thathkaala Kendra chart data - to be fetched
-  const [drekkanaZodiacNumber, setDrekkanaZodiacNumber] = useState<number | undefined>();
-  const [drekkanaPlanetSigns, setDrekkanaPlanetSigns] = useState<PlanetSign[] | undefined>();
-  const [isLoadingDrekkana, setIsLoadingDrekkana] = useState(false);
-  const [drekkanaError, setDrekkanaError] = useState<string | null>(null);
+  const rasiPlanetSigns =
+    propRasiData?.planetSigns ?? (location.state?.planetSigns as PlanetSign[] | undefined);
 
-  // Fetch Navamsa chart data on component mount
+  // Save birth details to sessionStorage for persistence on refresh
   useEffect(() => {
-    const fetchNavamsaData = async () => {
-      if (!birthDetails) {
-        setNavamsaError('Birth details not available');
-        return;
-      }
-
-      setIsLoadingNavamsa(true);
-      setNavamsaError(null);
-
-      try {
-        // Fetch Navamsa chart data using service layer
-        const { zodiacNumber, planetSigns } = await getNavamsaChartData(birthDetails);
-
-        setNavamsaZodiacNumber(zodiacNumber);
-        setNavamsaPlanetSigns(planetSigns);
-      } catch (err) {
-        setNavamsaError(err instanceof Error ? err.message : 'Failed to fetch Navamsa chart');
-        console.error('Error fetching Navamsa chart:', err);
-      } finally {
-        setIsLoadingNavamsa(false);
-      }
-    };
-
-    fetchNavamsaData();
+    if (birthDetails) {
+      saveBirthDetails(birthDetails);
+    }
   }, [birthDetails]);
 
-  // Fetch Thathkaala Kendra chart data on component mount
+  // Redirect to home if no birth details available
   useEffect(() => {
-    const fetchDrekkanaData = async () => {
-      if (!birthDetails) {
-        setDrekkanaError('Birth details not available');
-        return;
-      }
+    if (!birthDetails && !rasiZodiacNumber) {
+      navigate('/', {
+        state: {
+          error: 'Birth details required. Please enter your birth information.',
+        },
+      });
+    }
+  }, [birthDetails, rasiZodiacNumber, navigate]);
 
-      setIsLoadingDrekkana(true);
-      setDrekkanaError(null);
+  // Fetch Navamsa chart data using custom hook
+  const navamsa = useDivisionChart({
+    birthDetails,
+    chartType: 'navamsa',
+    enabled: !!birthDetails,
+  });
 
-      try {
-        // Fetch Thathkaala Kendra chart data using service layer
-        // Uses current date/time for ascendant and birth details for planet signs
-        const { zodiacNumber, planetSigns } = await getThathkaalaKendraChartData(birthDetails);
-
-        setDrekkanaZodiacNumber(zodiacNumber);
-        setDrekkanaPlanetSigns(planetSigns);
-      } catch (err) {
-        setDrekkanaError(err instanceof Error ? err.message : 'Failed to fetch Thathkaala Kendra chart');
-        console.error('Error fetching Thathkaala Kendra chart:', err);
-      } finally {
-        setIsLoadingDrekkana(false);
-      }
-    };
-
-    fetchDrekkanaData();
-  }, [birthDetails]);
+  // Fetch Thathkaala Kendra chart data using custom hook
+  const thathkaalaKendra = useDivisionChart({
+    birthDetails,
+    chartType: 'thathkaalaKendra',
+    enabled: !!birthDetails,
+  });
 
   return (
-    <div className="container mx-auto p-4 min-h-screen">
+    <main
+      className="container mx-auto p-4 min-h-screen"
+      role="main"
+      aria-label="Division Charts Page"
+    >
+      {/* Screen reader announcement for loading states */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {navamsa.isLoading || thathkaalaKendra.isLoading
+          ? 'Loading division charts...'
+          : 'Division charts loaded'}
+      </div>
+
       {/* Back Button */}
       <div className="mb-6">
         <button
           onClick={() => navigate('/')}
           className={`px-4 py-2 font-medium rounded-md transition-colors ${TAILWIND_CLASSES.ui.backButton}`}
+          aria-label="Back to birth details input"
         >
           ← Back to Input
         </button>
@@ -100,74 +114,40 @@ export function DivisionChartsPage() {
         Division Charts
       </h1>
 
-      {/* Three Grids Layout */}
+      {/* Three Charts Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Grid 1 - Rasi Chart (D1) */}
-        <div className="flex flex-col">
-          <h2 className="text-lg font-semibold text-center mb-3 text-neutral-800 dark:text-neutral-200">
-            Rasi Chart (D1)
-          </h2>
-          <div className="flex-1">
-            <AstrologicalGrid
-              zodiacNumber={zodiacNumber}
-              planetSigns={planetSigns}
-              showBackButton={false}
-            />
-          </div>
-        </div>
+        {/* Chart 1 - Rasi Chart (D1) */}
+        <ChartCard
+          title="Rasi Chart (D1)"
+          zodiacNumber={rasiZodiacNumber}
+          planetSigns={rasiPlanetSigns}
+          isLoading={false}
+          error={null}
+          ariaLabel="Rasi birth chart displaying ascendant and planetary positions at time of birth"
+        />
 
-        {/* Grid 2 - Navamsa Chart (D9) */}
-        <div className="flex flex-col">
-          <h2 className="text-lg font-semibold text-center mb-3 text-neutral-800 dark:text-neutral-200">
-            Navamsa Chart (D9)
-          </h2>
-          <div className="flex-1">
-            {isLoadingNavamsa ? (
-              <div className="flex items-center justify-center h-64 text-neutral-600 dark:text-neutral-400">
-                Loading Navamsa chart...
-              </div>
-            ) : navamsaError ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="p-4 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 rounded-md text-red-700 dark:text-red-300 text-sm">
-                  {navamsaError}
-                </div>
-              </div>
-            ) : (
-              <AstrologicalGrid
-                zodiacNumber={navamsaZodiacNumber}
-                planetSigns={navamsaPlanetSigns}
-                showBackButton={false}
-              />
-            )}
-          </div>
-        </div>
+        {/* Chart 2 - Navamsa Chart (D9) */}
+        <ChartCard
+          title="Navamsa Chart (D9)"
+          zodiacNumber={navamsa.zodiacNumber}
+          planetSigns={navamsa.planetSigns}
+          isLoading={navamsa.isLoading}
+          error={navamsa.error}
+          onRetry={navamsa.retry}
+          ariaLabel="Navamsa divisional chart used for analyzing marriage, spiritual growth, and inner self"
+        />
 
-        {/* Grid 3 - Thathkaala Kendra */}
-        <div className="flex flex-col">
-          <h2 className="text-lg font-semibold text-center mb-3 text-neutral-800 dark:text-neutral-200">
-            Thathkaala Kendra
-          </h2>
-          <div className="flex-1">
-            {isLoadingDrekkana ? (
-              <div className="flex items-center justify-center h-64 text-neutral-600 dark:text-neutral-400">
-                Loading Thathkaala Kendra...
-              </div>
-            ) : drekkanaError ? (
-              <div className="flex items-center justify-center h-64">
-                <div className="p-4 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 rounded-md text-red-700 dark:text-red-300 text-sm">
-                  {drekkanaError}
-                </div>
-              </div>
-            ) : (
-              <AstrologicalGrid
-                zodiacNumber={drekkanaZodiacNumber}
-                planetSigns={drekkanaPlanetSigns}
-                showBackButton={false}
-              />
-            )}
-          </div>
-        </div>
+        {/* Chart 3 - Thathkaala Kendra */}
+        <ChartCard
+          title="Thathkaala Kendra"
+          zodiacNumber={thathkaalaKendra.zodiacNumber}
+          planetSigns={thathkaalaKendra.planetSigns}
+          isLoading={thathkaalaKendra.isLoading}
+          error={thathkaalaKendra.error}
+          onRetry={thathkaalaKendra.retry}
+          ariaLabel="Thathkaala Kendra chart showing current time ascendant with birth planetary positions"
+        />
       </div>
-    </div>
+    </main>
   );
 }
