@@ -13,12 +13,14 @@ interface AstrologicalGridProps {
   zodiacNumber?: number;
   planetSigns?: PlanetSign[];
   showBackButton?: boolean;
+  title?: string;
 }
 
 export function AstrologicalGrid({
   zodiacNumber: propZodiacNumber,
   planetSigns: propPlanetSigns,
-  showBackButton = true
+  showBackButton = true,
+  title
 }: AstrologicalGridProps = {}) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -123,6 +125,7 @@ export function AstrologicalGrid({
                 onSelect={handleAreaSelect}
                 aspectingPlanets={aspectingPlanets}
                 highlightedPlanet={highlightedPlanet}
+                title={config.isCenter ? title : undefined}
               />
             ))}
           </svg>

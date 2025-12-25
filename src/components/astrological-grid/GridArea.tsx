@@ -12,7 +12,7 @@ import { getZodiacNameSinhala } from '@/utils/zodiac-names';
 import { calculateZodiacSignId } from '@/utils/zodiac-calculations';
 import type { PlanetSign } from '@/components/birth-details/BirthDetailsForm';
 import { TAILWIND_CLASSES } from '@/styles/theme-colors';
-import { CENTER_TEXT_Y_OFFSET, CENTER_TEXT_LINE_SPACING } from './grid-constants';
+import { CENTER_TEXT_Y_OFFSET, CENTER_TEXT_LINE_SPACING, CENTER_GRID_TITLE } from './grid-constants';
 import { ZodiacWatermark } from './ZodiacWatermark';
 import { PlanetDisplay } from './PlanetDisplay';
 import { GridShape } from './GridShape';
@@ -26,6 +26,7 @@ interface GridAreaProps {
   onSelect?: (areaId: number) => void;
   aspectingPlanets?: string[];
   highlightedPlanet?: string | null;
+  title?: string;
 }
 
 export function GridArea({
@@ -37,6 +38,7 @@ export function GridArea({
   onSelect,
   aspectingPlanets = [],
   highlightedPlanet = null,
+  title = CENTER_GRID_TITLE,
 }: GridAreaProps) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -118,7 +120,7 @@ export function GridArea({
             dominantBaseline="central"
             className="pointer-events-none select-none text-sm font-bold text-neutral-900 dark:text-neutral-100"
           >
-            නවංශකය
+            {title}
           </text>
         </>
       )}

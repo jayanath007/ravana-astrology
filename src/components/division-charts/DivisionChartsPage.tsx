@@ -142,7 +142,7 @@ export function DivisionChartsPage({
 
         {/* Chart 3 - Thathkala (D3) */}
         <ChartCard
-          title="තත්කාල"
+          title="ගෝචරය"
           zodiacNumber={thathkala.zodiacNumber}
           planetSigns={thathkala.planetSigns}
           isLoading={thathkala.isLoading}

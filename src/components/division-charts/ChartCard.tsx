@@ -80,6 +80,7 @@ export function ChartCard({
             zodiacNumber={zodiacNumber}
             planetSigns={planetSigns}
             showBackButton={false}
+            title={title}
           />
         )}
       </div>
