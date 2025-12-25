@@ -10,9 +10,9 @@
 // ============================================================================
 
 export const ASTROLOGICAL_COLORS = {
-  EXALTATION: '#1313f3ff',       // උච්ච (Blue) - Planet is exalted
-  TRINE: '#13a6d3ff',          // මුලත්‍රිකෝණ (Dark Green) - Strong trine position
-  OWN: '#10d410ff',              // ස්වගෘහ (Green) - Planet in own house
+  EXALTATION: '#0404f8ff',       // උච්ච (Blue) - Planet is exalted
+  TRINE: '#077a8aff',          // මුලත්‍රිකෝණ (Dark Green) - Strong trine position
+  OWN: '#1db95eff',              // ස්වගෘහ (Green) - Planet in own house
   STRONG: '#A9A9A9',           // බලවත් (Ash/Gray) - Strong position
   MEDIUM: '#0a0a0aff',         // මධ්‍යම (Brown) - Medium strength
   WEAK: '#97580bff',           // දුර්වල (Dark Orange) - Weak position

@@ -77,7 +77,7 @@ export function PlanetDisplay({
               y={position.y}
               textAnchor="middle"
               dominantBaseline="central"
-              className={`pointer-events-none font-semibold select-none ${position.adjustedFontSize}`}
+              className={`pointer-events-none font-bold select-none ${position.adjustedFontSize}`}
               style={{ fill: color }}
             >
               {planet}
