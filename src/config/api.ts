@@ -27,8 +27,3 @@ export const API_ENDPOINTS = {
 export const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
 } as const;
-
-/**
- * API timeout in milliseconds
- */
-export const API_TIMEOUT = 30000; // 30 seconds

@@ -89,36 +89,6 @@ export function calculateGrahaDrishti(planetSigns: PlanetSign[]): Map<number, st
 }
 
 /**
- * Get all planets aspecting a specific sign
- *
- * @param sign - The sign number (0-11)
- * @param grahaDrishtiMap - The calculated Graha Drishti map
- * @returns Array of planets aspecting the sign, or empty array if none
- */
-export function getPlanetsAspectingSign(
-  sign: number,
-  grahaDrishtiMap: Map<number, string[]>
-): string[] {
-  return grahaDrishtiMap.get(sign) || [];
-}
-
-/**
- * Get a formatted string of all aspects for debugging
- *
- * @param grahaDrishtiMap - The calculated Graha Drishti map
- * @returns Formatted string showing all sign-planet aspect relationships
- */
-export function formatGrahaDrishtiMap(grahaDrishtiMap: Map<number, string[]>): string {
-  const entries: string[] = [];
-
-  for (const [sign, planets] of grahaDrishtiMap.entries()) {
-    entries.push(`Sign ${sign}: [${planets.join(', ')}]`);
-  }
-
-  return entries.join('\n');
-}
-
-/**
  * Convert Graha Drishti Map to plain object for JSON serialization
  *
  * @param grahaDrishtiMap - The calculated Graha Drishti map

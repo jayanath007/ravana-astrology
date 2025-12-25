@@ -4,7 +4,6 @@ import { ChartCard } from "./ChartCard";
 import { useDivisionChart } from "@/hooks/useDivisionChart";
 import { saveBirthDetails, loadBirthDetails } from "@/utils/sessionStorage";
 import type { PlanetSign, BirthDetails } from "@/types/birthChart";
-import { TAILWIND_CLASSES } from "@/styles/theme-colors";
 
 /**
  * Props for DivisionChartsPage component

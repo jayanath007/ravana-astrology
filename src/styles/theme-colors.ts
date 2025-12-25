@@ -113,17 +113,3 @@ export const TAILWIND_CLASSES = {
     gridBorder: 'border-neutral-300 dark:border-neutral-700',
   },
 } as const;
-
-// ============================================================================
-// EXPORT ALL
-// ============================================================================
-
-export const THEME = {
-  astrological: ASTROLOGICAL_COLORS,
-  grid: GRID_COLORS,
-  interaction: INTERACTION_COLORS,
-  ui: UI_COLORS,
-  classes: TAILWIND_CLASSES,
-} as const;
-
-export default THEME;

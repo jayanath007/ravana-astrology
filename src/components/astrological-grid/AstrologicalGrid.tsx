@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useGridState } from '@/hooks/useGridState';
 import { GRID_CONFIG } from './grid-config';
 import { GridArea } from './GridArea';
@@ -23,7 +23,6 @@ export function AstrologicalGrid({
   title
 }: AstrologicalGridProps = {}) {
   const location = useLocation();
-  const navigate = useNavigate();
 
   // Use props if provided, otherwise fall back to location state
   const zodiacNumber = propZodiacNumber ?? location.state?.zodiacNumber as number | undefined;
