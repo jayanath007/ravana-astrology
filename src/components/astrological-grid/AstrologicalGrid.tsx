@@ -6,22 +6,8 @@ import { GridArea } from './GridArea';
 import type { PlanetSign } from '@/components/birth-details/BirthDetailsForm';
 import { TAILWIND_CLASSES } from '@/styles/theme-colors';
 import { calculateGrahaDrishti, grahaDrishtiMapToObject } from '@/utils/graha-drishti';
-
-// Mapping of zodiac sign numbers (1-12) to their ruling planets
-const ZODIAC_LORDS: Record<number, string> = {
-  1: 'කු',  // Aries (මේශ) → කුජ (Mars)
-  2: 'ශු', // Taurus (වෘෂභ) → ශුක්‍ර (Venus)
-  3: 'බු', // Gemini (මිථුන) → බුධ (Mercury)
-  4: 'ච',  // Cancer (කර්ක) → චන්ද්‍ර (Moon)
-  5: 'ර',  // Leo (සිංහ) → සූර්ය (Sun)
-  6: 'බු', // Virgo (කන්‍යා) → බුධ (Mercury)
-  7: 'ශු', // Libra (තුලා) → ශුක්‍ර (Venus)
-  8: 'කු', // Scorpio (වෘශික) → මංගල (Mars)
-  9: 'ගු', // Sagittarius (ධන) → ගුරු (Jupiter)
-  10: 'ශ', // Capricorn (මකර) → ශනි (Saturn)
-  11: 'ශ', // Aquarius (කුම්භ) → ශනි (Saturn)
-  12: 'ගු' // Pisces (මීන) → ගුරු (Jupiter)
-};
+import { calculateZodiacSignId, calculateAreaIdFromSign } from '@/utils/zodiac-calculations';
+import { getRulingPlanet } from '@/utils/zodiac-lords';
 
 interface AstrologicalGridProps {
   zodiacNumber?: number;
@@ -71,12 +57,11 @@ export function AstrologicalGrid({
 
     // Calculate zodiac sign for this area to find ruling planet
     if (newSelectedAreaId !== null) {
-      // Same calculation as in GridArea.tsx: ((offsetValue - 1) + areaId) % 12
-      const signId = ((offsetValue - 1) + newSelectedAreaId) % 12;
-      const finalSignId = signId === 0 ? 12 : signId;
+      // Use shared utility for zodiac calculation
+      const signId = calculateZodiacSignId(newSelectedAreaId, offsetValue);
 
       // Look up the ruling planet for this zodiac sign
-      const rulingPlanet = ZODIAC_LORDS[finalSignId];
+      const rulingPlanet = getRulingPlanet(signId);
       setHighlightedPlanet(rulingPlanet);
     } else {
       // Deselect: clear the highlighted planet
@@ -91,16 +76,8 @@ export function AstrologicalGrid({
       const newGridState: { [key: number]: string[] } = {};
 
       planetSigns.forEach(({ planet, sign }) => {
-        // Calculate which area ID corresponds to this sign based on the offset
-        // Formula: areaId = (sign - offsetValue + 1) % 12
-        // If result is 0 or negative, adjust it
-        let areaId = (sign - offsetValue + 1);
-        while (areaId <= 0) {
-          areaId += 12;
-        }
-        while (areaId > 12) {
-          areaId -= 12;
-        }
+        // Use shared utility to calculate area ID from sign
+        const areaId = calculateAreaIdFromSign(sign, offsetValue);
 
         // Add the planet to this area
         if (!newGridState[areaId]) {
