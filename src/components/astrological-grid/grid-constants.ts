@@ -21,34 +21,42 @@ export const CENTER_TEXT_Y_OFFSET = 20;
 export const CENTER_TEXT_LINE_SPACING = 18;
 export const CENTER_GRID_TITLE = 'නවංශකය';
 
+// Planet Font Size Configuration (adjustable)
+export const PLANET_FONT_CONFIG = {
+  SMALL_SIZE: 18,    // Font size for 1-3 planets (increased from 12px)
+  MEDIUM_SIZE: 16,   // Font size for 4-6 planets (increased from 10px)
+  LARGE_SIZE: 14,    // Font size for 7-8 planets (increased from 9px)
+  HIGHLIGHT_INCREASE: 7, // Additional pixels when highlighted
+} as const;
+
 // Planet Layout Configurations
 export const PLANET_LAYOUT = {
   SMALL: {
     // 1-3 planets
     charsPerRow: 2,
-    fontSize: 'text-xs',
-    lineHeight: 14,
-    charSpacing: 14,
-    fontSizePx: 12,
-    highlightIncrease: 7,
+    fontSize: `text-[${PLANET_FONT_CONFIG.SMALL_SIZE}px]`,
+    lineHeight: PLANET_FONT_CONFIG.SMALL_SIZE + 4,
+    charSpacing: PLANET_FONT_CONFIG.SMALL_SIZE + 2,
+    fontSizePx: PLANET_FONT_CONFIG.SMALL_SIZE,
+    highlightIncrease: PLANET_FONT_CONFIG.HIGHLIGHT_INCREASE,
   },
   MEDIUM: {
     // 4-6 planets
     charsPerRow: 2,
-    fontSize: 'text-[10px]',
-    lineHeight: 12,
-    charSpacing: 12,
-    fontSizePx: 10,
-    highlightIncrease: 7,
+    fontSize: `text-[${PLANET_FONT_CONFIG.MEDIUM_SIZE}px]`,
+    lineHeight: PLANET_FONT_CONFIG.MEDIUM_SIZE + 2,
+    charSpacing: PLANET_FONT_CONFIG.MEDIUM_SIZE + 2,
+    fontSizePx: PLANET_FONT_CONFIG.MEDIUM_SIZE,
+    highlightIncrease: PLANET_FONT_CONFIG.HIGHLIGHT_INCREASE,
   },
   LARGE: {
     // 7-8 planets
     charsPerRow: 3,
-    fontSize: 'text-[9px]',
-    lineHeight: 11,
-    charSpacing: 11,
-    fontSizePx: 9,
-    highlightIncrease: 7,
+    fontSize: `text-[${PLANET_FONT_CONFIG.LARGE_SIZE}px]`,
+    lineHeight: PLANET_FONT_CONFIG.LARGE_SIZE + 2,
+    charSpacing: PLANET_FONT_CONFIG.LARGE_SIZE + 1,
+    fontSizePx: PLANET_FONT_CONFIG.LARGE_SIZE,
+    highlightIncrease: PLANET_FONT_CONFIG.HIGHLIGHT_INCREASE,
   },
 } as const;
 
