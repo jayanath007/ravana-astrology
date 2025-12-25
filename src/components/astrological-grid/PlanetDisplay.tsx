@@ -7,6 +7,7 @@ import type { PlanetSign } from '@/components/birth-details/BirthDetailsForm';
 import { getPlanetColor } from '@/utils/planet-colors';
 import { INTERACTION_COLORS, TAILWIND_CLASSES } from '@/styles/theme-colors';
 import { getLayoutConfig, calculatePlanetPosition } from './planet-layout';
+import { PlanetTooltip } from './PlanetTooltip';
 
 interface PlanetDisplayProps {
   planets: string[];
@@ -52,7 +53,12 @@ export function PlanetDisplay({
         );
 
         return (
-          <g key={`${planet}-${index}`}>
+          <PlanetTooltip
+            key={`${planet}-${index}`}
+            planet={planet}
+            x={position.x}
+            y={position.y}
+          >
             {/* Highlight background square for aspecting planet (orange) */}
             {isAspecting && (
               <rect
@@ -77,12 +83,12 @@ export function PlanetDisplay({
               y={position.y}
               textAnchor="middle"
               dominantBaseline="central"
-              className={`pointer-events-none font-bold select-none ${position.adjustedFontSize}`}
+              className={`pointer-events-auto font-bold select-none ${position.adjustedFontSize}`}
               style={{ fill: color }}
             >
               {planet}
             </text>
-          </g>
+          </PlanetTooltip>
         );
       })}
     </>
