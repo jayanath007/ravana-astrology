@@ -38,8 +38,10 @@ export function GridArea({
   onSelect,
   aspectingPlanets = [],
   highlightedPlanet = null,
-  title = CENTER_GRID_TITLE,
+  title,
 }: GridAreaProps) {
+  // Use CENTER_GRID_TITLE as fallback only if title is undefined
+  const displayTitle = title ?? CENTER_GRID_TITLE;
   const [isHovered, setIsHovered] = useState(false);
 
   // Calculate zodiac sign using shared utility
@@ -120,7 +122,7 @@ export function GridArea({
             dominantBaseline="central"
             className="pointer-events-none select-none text-sm font-bold text-neutral-900 dark:text-neutral-100"
           >
-            {title}
+            {displayTitle}
           </text>
         </>
       )}
@@ -144,6 +146,7 @@ export function GridArea({
           planetSigns={planetSigns}
           aspectingPlanets={aspectingPlanets}
           highlightedPlanet={highlightedPlanet}
+          enableTooltip={displayTitle === 'ලග්නය'}
         />
       )}
     </g>

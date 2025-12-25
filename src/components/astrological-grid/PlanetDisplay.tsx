@@ -16,6 +16,7 @@ interface PlanetDisplayProps {
   planetSigns?: PlanetSign[];
   aspectingPlanets?: string[];
   highlightedPlanet?: string | null;
+  enableTooltip?: boolean;
 }
 
 export function PlanetDisplay({
@@ -25,6 +26,7 @@ export function PlanetDisplay({
   planetSigns,
   aspectingPlanets = [],
   highlightedPlanet = null,
+  enableTooltip = false,
 }: PlanetDisplayProps) {
   if (planets.length === 0) return null;
 
@@ -58,6 +60,7 @@ export function PlanetDisplay({
             planet={planet}
             x={position.x}
             y={position.y}
+            enabled={enableTooltip}
           >
             {/* Highlight background square for aspecting planet (orange) */}
             {isAspecting && (

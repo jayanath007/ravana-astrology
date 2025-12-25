@@ -118,7 +118,7 @@ export function AstrologicalGrid({
                 onSelect={handleAreaSelect}
                 aspectingPlanets={aspectingPlanets}
                 highlightedPlanet={highlightedPlanet}
-                title={config.isCenter ? title : undefined}
+                title={title}
               />
             ))}
           </svg>

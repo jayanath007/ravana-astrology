@@ -11,6 +11,7 @@ interface PlanetTooltipProps {
   x: number;
   y: number;
   children: React.ReactNode;
+  enabled?: boolean;
 }
 
 interface PlanetDetails {
@@ -31,7 +32,7 @@ const PLANET_DETAILS_MOCK: Record<string, PlanetDetails> = {
   ර: { nakshatra: 'Pushya', padaya: '2nd Padaya', navaAnka: 1 },
 };
 
-export function PlanetTooltip({ planet, x, y, children }: PlanetTooltipProps) {
+export function PlanetTooltip({ planet, x, y, children, enabled = false }: PlanetTooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
@@ -43,6 +44,8 @@ export function PlanetTooltip({ planet, x, y, children }: PlanetTooltipProps) {
   };
 
   const handleMouseEnter = (e: React.MouseEvent<SVGGElement>) => {
+    if (!enabled) return;
+
     const rect = e.currentTarget.getBoundingClientRect();
     setTooltipPos({
       x: rect.left + rect.width / 2,
@@ -60,12 +63,12 @@ export function PlanetTooltip({ planet, x, y, children }: PlanetTooltipProps) {
       <g
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: enabled ? 'pointer' : 'default' }}
       >
         {children}
       </g>
 
-      {isVisible &&
+      {enabled && isVisible &&
         createPortal(
           <div
             className="fixed bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl rounded-md p-4 pointer-events-none"

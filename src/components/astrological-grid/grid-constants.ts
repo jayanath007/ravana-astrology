@@ -19,7 +19,7 @@ export const ZODIAC_IMAGE_OPACITY = 0.15;
 // Center Text Layout
 export const CENTER_TEXT_Y_OFFSET = 20;
 export const CENTER_TEXT_LINE_SPACING = 18;
-export const CENTER_GRID_TITLE = 'නවංශකය';
+export const CENTER_GRID_TITLE = 'ලග්නය';
 
 // Planet Font Size Configuration (adjustable)
 export const PLANET_FONT_CONFIG = {
