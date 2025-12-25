@@ -121,7 +121,7 @@ export function DivisionChartsPage({
         
         {/* Chart 2 - Navamsa Chart (D9) */}
         <ChartCard
-          title="Navamsa Chart (D9)"
+          title="නවංශකය"
           zodiacNumber={navamsa.zodiacNumber}
           planetSigns={navamsa.planetSigns}
           isLoading={navamsa.isLoading}
@@ -132,7 +132,7 @@ export function DivisionChartsPage({
 
         {/* Chart 1 - Rasi Chart (D1) */}
         <ChartCard
-          title="Rasi Chart (D1)"
+          title="ලග්නය"
           zodiacNumber={rasiZodiacNumber}
           planetSigns={rasiPlanetSigns}
           isLoading={false}
@@ -142,7 +142,7 @@ export function DivisionChartsPage({
 
         {/* Chart 3 - Thathkala (D3) */}
         <ChartCard
-          title="Thathkala (D3)"
+          title="තත්කාල"
           zodiacNumber={thathkala.zodiacNumber}
           planetSigns={thathkala.planetSigns}
           isLoading={thathkala.isLoading}
