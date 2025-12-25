@@ -44,9 +44,7 @@ export function ChartCard({
 }: ChartCardProps) {
   return (
     <section aria-label={ariaLabel} className="flex flex-col">
-      <h2 className="text-lg font-semibold text-center mb-3 text-neutral-800 dark:text-neutral-200">
-        {title}
-      </h2>
+
 
       <div className="flex-1" aria-busy={isLoading}>
         {isLoading ? (

@@ -97,12 +97,6 @@ export function AstrologicalGrid({
     <div className="container mx-auto p-4 min-h-screen">
       {showBackButton && (
         <div className="mb-6">
-          <button
-            onClick={() => navigate('/')}
-            className={`px-4 py-2 font-medium rounded-md transition-colors ${TAILWIND_CLASSES.ui.backButton}`}
-          >
-            ← Back to Input
-          </button>
         </div>
       )}
 

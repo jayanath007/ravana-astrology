@@ -102,13 +102,7 @@ export function DivisionChartsPage({
 
       {/* Back Button */}
       <div className="mb-6">
-        <button
-          onClick={() => navigate("/")}
-          className={`px-4 py-2 font-medium rounded-md transition-colors ${TAILWIND_CLASSES.ui.backButton}`}
-          aria-label="Back to birth details input"
-        >
-          ← Back to Input
-        </button>
+      
       </div>
 
       {/* Page Title */}
