@@ -105,15 +105,8 @@ export function DashaPage() {
 
   return (
     <main className="container mx-auto p-4 min-h-screen">
-      <h1 className="text-3xl font-bold text-center mb-6 text-neutral-900 dark:text-neutral-100">
-        Vimshottari Dasha
-      </h1>
-
       {/* Timeline Section */}
       <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-6 mb-6">
-        <h2 className="text-xl font-bold mb-4 text-neutral-900 dark:text-neutral-100">
-          Timeline Controls
-        </h2>
 
         {/* Timeline with markers */}
         <DashaTimelineControl
@@ -123,12 +116,7 @@ export function DashaPage() {
           birthDate={data.birthDateTimeLocal}
         />
 
-        {/* Date-time picker */}
-        <TimelinePlayControls
-          selectedDate={selectedDate}
-          onDateTimeChange={setSelectedDate}
-          className="mt-4"
-        />
+   
       </div>
 
       {/* Display periods for selected date */}

@@ -1,15 +1,16 @@
-import { useMemo } from 'react';
-import { Slider } from '@/components/ui/slider';
+import { useMemo } from "react";
+import { Slider } from "@/components/ui/slider";
 import {
   getPlanetColor,
   getPlanetNameSinhala,
   formatDateRange,
   findActiveMahadasha,
-} from '@/dashaApiIntegration/vimshottari-dasha.utils';
+} from "@/dashaApiIntegration/vimshottari-dasha.utils";
 import type {
   ParsedMahadasha,
-  DashaPlanet
-} from '@/dashaApiIntegration/vimshottari-dasha.types';
+  DashaPlanet,
+} from "@/dashaApiIntegration/vimshottari-dasha.types";
+import { TimelinePlayControls } from "./TimelinePlayControls";
 
 interface DashaTimelineControlProps {
   selectedDate: Date;
@@ -33,21 +34,25 @@ export function DashaTimelineControl({
 
   // Calculate current position as percentage (0-100)
   const currentPosition = useMemo(() => {
-    const totalMs = timelineBounds.endDate.getTime() - timelineBounds.birthDate.getTime();
-    const currentMs = selectedDate.getTime() - timelineBounds.birthDate.getTime();
+    const totalMs =
+      timelineBounds.endDate.getTime() - timelineBounds.birthDate.getTime();
+    const currentMs =
+      selectedDate.getTime() - timelineBounds.birthDate.getTime();
     return Math.max(0, Math.min(100, (currentMs / totalMs) * 100));
   }, [selectedDate, timelineBounds]);
 
   // Helper function to calculate position percentage for any date
   const calculatePosition = (date: Date): number => {
-    const totalMs = timelineBounds.endDate.getTime() - timelineBounds.birthDate.getTime();
+    const totalMs =
+      timelineBounds.endDate.getTime() - timelineBounds.birthDate.getTime();
     const dateMs = date.getTime() - timelineBounds.birthDate.getTime();
     return Math.max(0, Math.min(100, (dateMs / totalMs) * 100));
   };
 
   // Convert slider value (0-100) to date
   const sliderValueToDate = (value: number): Date => {
-    const totalMs = timelineBounds.endDate.getTime() - timelineBounds.birthDate.getTime();
+    const totalMs =
+      timelineBounds.endDate.getTime() - timelineBounds.birthDate.getTime();
     const targetMs = (value / 100) * totalMs;
     return new Date(timelineBounds.birthDate.getTime() + targetMs);
   };
@@ -57,7 +62,10 @@ export function DashaTimelineControl({
     const newDate = sliderValueToDate(values[0]);
 
     // Validate date is within bounds
-    if (newDate >= timelineBounds.birthDate && newDate <= timelineBounds.endDate) {
+    if (
+      newDate >= timelineBounds.birthDate &&
+      newDate <= timelineBounds.endDate
+    ) {
       setSelectedDate(newDate);
     }
   };
@@ -72,13 +80,62 @@ export function DashaTimelineControl({
       {/* Timeline Container */}
       <div className="relative w-full">
         {/* Timeline Track with Markers */}
+
+        {/* Timeline Duration */}
+        <div className="flex flex-col items-end justify-center">
+                <TimelinePlayControls
+            selectedDate={selectedDate}
+            onDateTimeChange={setSelectedDate}
+            className="mt-4"
+          />
+          {/* <span className="text-xl text-neutral-400 dark:text-neutral-500">
+            විම්ශෝත්තරී දශා කාලරාමුව 120 වසර
+          </span> */}
+        </div>
+    <div className="flex justify-between mt-1 text-sm">
+          {/* First Mahadasha Start */}
+          <div className="flex flex-col items-start">
+            {mahadashaPeriods.length > 0 && (
+              <>
+                <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                  {mahadashaPeriods[0].startDateLocal.toLocaleDateString(
+                    "si-LK",
+                    {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    }
+                  )}
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* Last Mahadasha End */}
+          <div className="flex flex-col items-end">
+            {mahadashaPeriods.length > 0 && (
+              <>
+                <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                  {mahadashaPeriods[
+                    mahadashaPeriods.length - 1
+                  ].endDateLocal.toLocaleDateString("si-LK", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </span>
+              </>
+            )}
+          </div>
+        </div>
         <div className="relative h-16 bg-neutral-200 dark:bg-neutral-700 rounded-lg overflow-visible">
           {/* Mahadasha Segments with Labels */}
           {mahadashaPeriods.map((mahadasha, index) => {
             const startPercent = calculatePosition(mahadasha.startDateLocal);
-            const endPercent = index < mahadashaPeriods.length - 1
-              ? calculatePosition(mahadashaPeriods[index + 1].startDateLocal)
-              : 100;
+            const endPercent =
+              index < mahadashaPeriods.length - 1
+                ? calculatePosition(mahadashaPeriods[index + 1].startDateLocal)
+                : 100;
             const widthPercent = endPercent - startPercent;
             const color = getPlanetColor(mahadasha.planet as DashaPlanet);
             const planetNameSinhala = getPlanetNameSinhala(mahadasha.planet);
@@ -109,16 +166,22 @@ export function DashaTimelineControl({
             const positionPercent = calculatePosition(mahadasha.startDateLocal);
             const color = getPlanetColor(mahadasha.planet as DashaPlanet);
             const planetNameSinhala = getPlanetNameSinhala(mahadasha.planet);
-            const formattedDate = mahadasha.startDateLocal.toLocaleDateString('si-LK', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            });
-            const formattedTime = mahadasha.startDateLocal.toLocaleTimeString('si-LK', {
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',
-            });
+            const formattedDate = mahadasha.startDateLocal.toLocaleDateString(
+              "si-LK",
+              {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }
+            );
+            const formattedTime = mahadasha.startDateLocal.toLocaleTimeString(
+              "si-LK",
+              {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              }
+            );
 
             return (
               <div
@@ -126,8 +189,8 @@ export function DashaTimelineControl({
                 className="absolute top-0 h-full transition-all cursor-pointer group"
                 style={{
                   left: `${positionPercent}%`,
-                  width: '8px',
-                  marginLeft: '-4px',
+                  width: "8px",
+                  marginLeft: "-4px",
                   zIndex: 15,
                 }}
               >
@@ -143,12 +206,13 @@ export function DashaTimelineControl({
                   style={{ zIndex: 9999 }}
                 >
                   <div className="bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl">
-                    <div className="font-bold text-center mb-1" style={{ color }}>
+                    <div
+                      className="font-bold text-center mb-1"
+                      style={{ color }}
+                    >
                       {planetNameSinhala} මහදාශාව ආරම්භය
                     </div>
-                    <div className="text-center mb-0.5">
-                      {formattedDate}
-                    </div>
+                    <div className="text-center mb-0.5">{formattedDate}</div>
                     <div className="text-center text-gray-300">
                       {formattedTime}
                     </div>
@@ -157,9 +221,9 @@ export function DashaTimelineControl({
                   <div
                     className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0"
                     style={{
-                      borderLeft: '6px solid transparent',
-                      borderRight: '6px solid transparent',
-                      borderTop: '6px solid #111827',
+                      borderLeft: "6px solid transparent",
+                      borderRight: "6px solid transparent",
+                      borderTop: "6px solid #111827",
                     }}
                   />
                 </div>
@@ -176,7 +240,7 @@ export function DashaTimelineControl({
               step={0.01}
               className="w-full pointer-events-auto"
               aria-label="Dasha timeline: Select date"
-              aria-valuetext={selectedDate.toLocaleDateString('si-LK')}
+              aria-valuetext={selectedDate.toLocaleDateString("si-LK")}
             />
           </div>
 
@@ -194,10 +258,10 @@ export function DashaTimelineControl({
                   </div>
                 )}
                 <div>
-                  {selectedDate.toLocaleDateString('si-LK', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
+                  {selectedDate.toLocaleDateString("si-LK", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
                   })}
                 </div>
               </div>
@@ -205,70 +269,8 @@ export function DashaTimelineControl({
           </div>
         </div>
 
-        {/* Date Labels (Dasha Period Start and End) */}
-        <div className="flex justify-between mt-3 text-sm">
-          {/* First Mahadasha Start */}
-          <div className="flex flex-col items-start">
-            <span className="text-xs text-neutral-500 dark:text-neutral-400 mb-0.5">
-              දශා ආරම්භය
-            </span>
-            {mahadashaPeriods.length > 0 && (
-              <>
-                <span className="font-semibold text-neutral-700 dark:text-neutral-300">
-                  {mahadashaPeriods[0].startDateLocal.toLocaleDateString('si-LK', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </span>
-                <span className="text-xs" style={{ color: getPlanetColor(mahadashaPeriods[0].planet as DashaPlanet) }}>
-                  {getPlanetNameSinhala(mahadashaPeriods[0].planet)} මහදාශාව
-                </span>
-                <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                  {mahadashaPeriods[0].startDateLocal.toLocaleTimeString('si-LK', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </span>
-              </>
-            )}
-          </div>
-
-          {/* Timeline Duration */}
-          <div className="flex flex-col items-center justify-center">
-            <span className="text-xs text-neutral-500 dark:text-neutral-400">120 වසර</span>
-            <span className="text-xs text-neutral-400 dark:text-neutral-500">
-              විම්ශෝත්තරී දශා කාලරාමුව
-            </span>
-          </div>
-
-          {/* Last Mahadasha End */}
-          <div className="flex flex-col items-end">
-            <span className="text-xs text-neutral-500 dark:text-neutral-400 mb-0.5">
-              දශා අවසානය
-            </span>
-            {mahadashaPeriods.length > 0 && (
-              <>
-                <span className="font-semibold text-neutral-700 dark:text-neutral-300">
-                  {mahadashaPeriods[mahadashaPeriods.length - 1].endDateLocal.toLocaleDateString('si-LK', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                </span>
-                <span className="text-xs" style={{ color: getPlanetColor(mahadashaPeriods[mahadashaPeriods.length - 1].planet as DashaPlanet) }}>
-                  {getPlanetNameSinhala(mahadashaPeriods[mahadashaPeriods.length - 1].planet)} මහදාශාව
-                </span>
-                <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                  {mahadashaPeriods[mahadashaPeriods.length - 1].endDateLocal.toLocaleTimeString('si-LK', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </span>
-              </>
-            )}
-          </div>
-        </div>
+    
+    
       </div>
     </div>
   );
