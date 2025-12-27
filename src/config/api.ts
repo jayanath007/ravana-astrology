@@ -19,6 +19,9 @@ export const API_ENDPOINTS = {
     navamsaAscendant: '/api/birthchart/navamsa-ascendant',
     navamsaSigns: '/api/birthchart/navamsa-signs',
   },
+  dasha: {
+    vimshottari: '/api/dasha/vimshottari',
+  },
 } as const;
 
 /**

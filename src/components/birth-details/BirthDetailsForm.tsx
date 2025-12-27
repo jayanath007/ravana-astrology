@@ -72,6 +72,17 @@ export function BirthDetailsForm() {
     }
   };
 
+  const handleDashaCalculation = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Navigate to Dasha page with birth details
+    navigate('/dasha', {
+      state: {
+        birthDetails: formData,
+      }
+    });
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -202,6 +213,15 @@ export function BirthDetailsForm() {
               className="px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed text-white font-semibold rounded-md transition-colors"
             >
               {isLoading ? 'Calculating...' : 'View Division Charts'}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDashaCalculation}
+              disabled={isLoading}
+              className="px-4 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed text-white font-semibold rounded-md transition-colors"
+            >
+              {isLoading ? 'Loading...' : 'Calculate Dasha Periods'}
             </button>
           </div>
         </form>

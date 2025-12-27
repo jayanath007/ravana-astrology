@@ -32,7 +32,7 @@ const PLANET_DETAILS_MOCK: Record<string, PlanetDetails> = {
   ර: { nakshatra: 'Pushya', padaya: '2nd Padaya', navaAnka: 1 },
 };
 
-export function PlanetTooltip({ planet, x, y, children, enabled = false }: PlanetTooltipProps) {
+export function PlanetTooltip({ planet, x: _x, y: _y, children, enabled = false }: PlanetTooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 

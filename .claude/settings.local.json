@@ -16,7 +16,8 @@
       "Bash(git push:*)",
       "WebFetch(domain:thenounproject.com)",
       "Bash(node extract-svg-data.js:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(tree:*)"
     ]
   }
 }
