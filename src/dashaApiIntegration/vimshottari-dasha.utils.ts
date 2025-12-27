@@ -234,22 +234,34 @@ export function getElapsedPercentage(
 }
 
 /**
- * Get planet color for UI styling (common Vedic astrology colors)
+ * Get planet color for UI styling using astrological significance colors
+ * These colors are based on traditional Vedic astrology principles
  */
 export function getPlanetColor(planet: DashaPlanet): string {
-  const colors: Record<DashaPlanet, string> = {
-    Sun: '#FFA500',      // Orange
-    Moon: '#E0E0E0',     // Silver/White
-    Mars: '#DC143C',     // Crimson
-    Mercury: '#32CD32',  // Green
-    Jupiter: '#FFD700',  // Gold
-    Venus: '#FF69B4',    // Pink
-    Saturn: '#4B0082',   // Indigo
-    Rahu: '#696969',     // Dark Gray
-    Ketu: '#808080',     // Gray
+  // Import astrological colors from theme
+  const ASTROLOGICAL_COLORS = {
+    EXALTATION: '#0404f8ff',       // Blue - Exalted/Beneficial
+    TRINE: '#117481ff',            // Dark Green - Strong trine
+    OWN: '#1db95eff',              // Green - Own house
+    STRONG: '#797575ff',           // Ash/Gray - Strong
+    MEDIUM: '#0a0a0aff',           // Brown - Medium
+    WEAK: '#97580bff',             // Dark Orange - Weak
+    DEBILITATED: '#FF0000',        // Red - Debilitated/Malefic
   };
 
-  return colors[planet] || '#000000';
+  const colors: Record<DashaPlanet, string> = {
+    Sun: ASTROLOGICAL_COLORS.EXALTATION,      // Exalted - Blue (Royal planet)
+    Moon: ASTROLOGICAL_COLORS.STRONG,         // Strong - Ash/Gray (Mind)
+    Mars: ASTROLOGICAL_COLORS.OWN,            // Own - Green (Warrior)
+    Mercury: ASTROLOGICAL_COLORS.TRINE,       // Trine - Dark Green (Intelligence)
+    Jupiter: ASTROLOGICAL_COLORS.EXALTATION,  // Exalted - Blue (Guru/Benefic)
+    Venus: ASTROLOGICAL_COLORS.OWN,           // Own - Green (Love/Arts)
+    Saturn: ASTROLOGICAL_COLORS.MEDIUM,       // Medium - Brown (Karma)
+    Rahu: ASTROLOGICAL_COLORS.WEAK,           // Weak - Dark Orange (Shadow)
+    Ketu: ASTROLOGICAL_COLORS.WEAK,           // Weak - Dark Orange (Shadow)
+  };
+
+  return colors[planet] || ASTROLOGICAL_COLORS.STRONG;
 }
 
 /**

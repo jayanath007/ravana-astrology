@@ -1,18 +1,15 @@
 import {
   formatDateRange,
-  formatDuration,
-  formatRemainingTime,
   getPlanetColor,
-  getElapsedPercentage,
   getPlanetNameSinhala,
-} from '@/dashaApiIntegration/vimshottari-dasha.utils';
+} from "@/dashaApiIntegration/vimshottari-dasha.utils";
 import type {
   ParsedMahadasha,
   ParsedAntardasha,
   ParsedPratyantardasha,
   ParsedSookshma,
   DashaPlanet,
-} from '@/dashaApiIntegration/vimshottari-dasha.types';
+} from "@/dashaApiIntegration/vimshottari-dasha.types";
 
 interface DatePeriodDisplayProps {
   selectedDate: Date;
@@ -28,8 +25,6 @@ interface DashaCardProps {
   color: string;
   startDate: Date;
   endDate: Date;
-  duration: number;
-  selectedDate: Date;
 }
 
 function DashaCard({
@@ -38,75 +33,20 @@ function DashaCard({
   color,
   startDate,
   endDate,
-  duration,
-  selectedDate,
 }: DashaCardProps) {
-  const progress = getElapsedPercentage(startDate, endDate, selectedDate);
   const sinhalaName = getPlanetNameSinhala(planet);
 
   return (
     <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg overflow-hidden">
       {/* Header with label and planet */}
-      <div
-        className="p-4"
-        style={{ backgroundColor: color }}
-      >
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold text-white/80 uppercase tracking-wide mb-1">
-              {label}
-            </p>
-            <h3 className="text-2xl font-bold text-white">{sinhalaName}</h3>
-            <p className="text-xs text-white/70 mt-1">{planet}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-xs text-white/80">Progress</p>
-            <p className="text-xl font-bold text-white">{progress.toFixed(1)}%</p>
-          </div>
-        </div>
-
-        {/* Progress bar */}
-        <div className="mt-3">
-          <div className="h-2 bg-white/30 rounded-full overflow-hidden">
-            <div
-              className="h-full transition-all bg-white shadow-sm"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Card body with details */}
-      <div className="p-4 space-y-3">
-        {/* Duration */}
-        <div>
-          <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase mb-1">
-            Duration
-          </p>
-          <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-            {formatDuration(duration)}
-          </p>
-        </div>
-
-        {/* Date range */}
-        <div>
-          <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase mb-1">
-            Period
-          </p>
-          <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-            {formatDateRange(startDate, endDate)}
-          </p>
-        </div>
-
-        {/* Remaining time */}
-        <div>
-          <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase mb-1">
-            Status
-          </p>
-          <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-            {formatRemainingTime(endDate, selectedDate)}
-          </p>
-        </div>
+      <div className="p-6 bg-white dark:bg-neutral-800">
+        <p className="text-1xl font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-2">
+          {label}
+        </p>
+        <p >
+          <span className="text-3xl font-bold" style={{ color: color }}> {sinhalaName} </span>{" "}
+          <span> {formatDateRange(startDate, endDate, "si-LK")} </span>
+        </p>
       </div>
     </div>
   );
@@ -129,7 +69,8 @@ export function DatePeriodDisplay({
           Dasha Periods for {selectedDate.toLocaleDateString()}
         </h2>
         <p className="text-neutral-600 dark:text-neutral-400">
-          No Dasha periods found for this date. The date may be outside the calculated range.
+          No Dasha periods found for this date. The date may be outside the
+          calculated range.
         </p>
       </div>
     );
@@ -144,116 +85,148 @@ export function DatePeriodDisplay({
         Dasha Periods for {selectedDate.toLocaleDateString()}
       </h2>
 
-      {/* Grid layout for cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Flex layout for cards with separators */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2">
         {/* Mahadasha Card */}
-        <DashaCard
-          label="Mahadasha"
-          planet={mahadasha.planet}
-          color={getPlanetColor(mahadasha.planet as DashaPlanet)}
-          startDate={mahadasha.startDateLocal}
-          endDate={mahadasha.endDateLocal}
-          duration={mahadasha.durationYears}
-          selectedDate={selectedDate}
-        />
+        <div className="flex-1">
+          <DashaCard
+            label="මහදාශාව"
+            planet={mahadasha.planet}
+            color={getPlanetColor(mahadasha.planet as DashaPlanet)}
+            startDate={mahadasha.startDateLocal}
+            endDate={mahadasha.endDateLocal}
+          />
+        </div>
+
+        {/* Separator */}
+        <div className="hidden lg:flex items-center justify-center text-4xl font-bold text-neutral-400 dark:text-neutral-500">
+          &gt;
+        </div>
 
         {/* Antardasha Card */}
-        {antardasha ? (
-          <DashaCard
-            label="Antardasha"
-            planet={antardasha.planet}
-            color={getPlanetColor(antardasha.planet as DashaPlanet)}
-            startDate={antardasha.startDateLocal}
-            endDate={antardasha.endDateLocal}
-            duration={antardasha.durationYears}
-            selectedDate={selectedDate}
-          />
-        ) : (
-          <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow-lg p-6 flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-2">
-                Antardasha
-              </p>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                Not available
-              </p>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
-                Increase detail level
-              </p>
+        <div className="flex-1">
+          {antardasha ? (
+            <DashaCard
+              label="අන්තරදාශාව"
+              planet={antardasha.planet}
+              color={getPlanetColor(antardasha.planet as DashaPlanet)}
+              startDate={antardasha.startDateLocal}
+              endDate={antardasha.endDateLocal}
+            />
+          ) : (
+            <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow-lg p-6 flex items-center justify-center h-full">
+              <div className="text-center">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-2">
+                  අන්තරදාශාව
+                </p>
+                <p className="text-xs text-neutral-400 dark:text-neutral-500">
+                  Not available
+                </p>
+                <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
+                  Increase detail level
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+
+        {/* Separator */}
+        <div className="hidden lg:flex items-center justify-center text-4xl font-bold text-neutral-400 dark:text-neutral-500">
+          &gt;
+        </div>
 
         {/* Pratyantardasha Card */}
-        {pratyantardasha ? (
-          <DashaCard
-            label="Pratyantardasha"
-            planet={pratyantardasha.planet}
-            color={getPlanetColor(pratyantardasha.planet as DashaPlanet)}
-            startDate={pratyantardasha.startDateLocal}
-            endDate={pratyantardasha.endDateLocal}
-            duration={pratyantardasha.durationYears}
-            selectedDate={selectedDate}
-          />
-        ) : (
-          <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow-lg p-6 flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-2">
-                Pratyantardasha
-              </p>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                Not available
-              </p>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
-                Increase detail level
-              </p>
+        <div className="flex-1">
+          {pratyantardasha ? (
+            <DashaCard
+              label="වීදසාව"
+              planet={pratyantardasha.planet}
+              color={getPlanetColor(pratyantardasha.planet as DashaPlanet)}
+              startDate={pratyantardasha.startDateLocal}
+              endDate={pratyantardasha.endDateLocal}
+            />
+          ) : (
+            <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow-lg p-6 flex items-center justify-center h-full">
+              <div className="text-center">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-2">
+                  වීදසාව
+                </p>
+                <p className="text-xs text-neutral-400 dark:text-neutral-500">
+                  Not available
+                </p>
+                <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
+                  Increase detail level
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+
+        {/* Separator */}
+        <div className="hidden lg:flex items-center justify-center text-4xl font-bold text-neutral-400 dark:text-neutral-500">
+          &gt;
+        </div>
 
         {/* Sookshma Card */}
-        {sookshma ? (
-          <DashaCard
-            label="Sookshma"
-            planet={sookshma.planet}
-            color={getPlanetColor(sookshma.planet as DashaPlanet)}
-            startDate={sookshma.startDateLocal}
-            endDate={sookshma.endDateLocal}
-            duration={sookshma.durationYears}
-            selectedDate={selectedDate}
-          />
-        ) : (
-          <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow-lg p-6 flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-2">
-                Sookshma
-              </p>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500">
-                Not available
-              </p>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
-                Increase detail level
-              </p>
+        <div className="flex-1">
+          {sookshma ? (
+            <DashaCard
+              label="සුක්ෂ්මදාශාව"
+              planet={sookshma.planet}
+              color={getPlanetColor(sookshma.planet as DashaPlanet)}
+              startDate={sookshma.startDateLocal}
+              endDate={sookshma.endDateLocal}
+            />
+          ) : (
+            <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow-lg p-6 flex items-center justify-center h-full">
+              <div className="text-center">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-2">
+                  සුක්ෂ්මදාශාව
+                </p>
+                <p className="text-xs text-neutral-400 dark:text-neutral-500">
+                  Not available
+                </p>
+                <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
+                  Increase detail level
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Status message */}
       <div className="mt-6 p-4 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
         {hasSookshma ? (
           <p className="text-sm text-green-600 dark:text-green-400 flex items-center">
-            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clipRule="evenodd"
+              />
             </svg>
             All 4 levels of Dasha periods are displayed
           </p>
         ) : (
           <p className="text-sm text-neutral-600 dark:text-neutral-400 flex items-center">
-            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
             </svg>
-            Some Dasha levels are not available. Increase detail level to see all periods.
+            Some Dasha levels are not available. Increase detail level to see
+            all periods.
           </p>
         )}
       </div>
