@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useVimshottariDasha } from '@/hooks/useVimshottariDasha';
 import { saveBirthDetails, loadBirthDetails } from '@/utils/sessionStorage';
@@ -42,29 +42,8 @@ export function DashaPage() {
     }
   }, [birthDetails, navigate]);
 
-  // State for selected date (default to today)
+  // State for selected date (default to current date and time)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-
-  // State for timeline animation
-  const [isPlaying, setIsPlaying] = useState(false);
-  const animationRef = useRef<number | null>(null);
-  const lastUpdateRef = useRef<number>(0);
-
-  // Format date for input (YYYY-MM-DD)
-  const formatDateForInput = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  // Handle date change from input
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const dateValue = e.target.value;
-    if (dateValue) {
-      setSelectedDate(new Date(dateValue + 'T00:00:00'));
-    }
-  };
 
   // Fetch Dasha data
   const { data, isLoading, error, retry } = useVimshottariDasha({
@@ -73,15 +52,6 @@ export function DashaPage() {
     yearsToCalculate: 120,
     enabled: !!birthDetails,
   });
-
-  // Calculate timeline bounds (birth date to birth date + 120 years)
-  const timelineBounds = useMemo(() => {
-    if (!data) return null;
-    const birthDate = data.birthDateTimeLocal;
-    const endDate = new Date(birthDate);
-    endDate.setFullYear(birthDate.getFullYear() + 120);
-    return { birthDate, endDate };
-  }, [data]);
 
   // Calculate periods for selected date
   const selectedDatePeriods = useMemo(() => {
@@ -96,69 +66,6 @@ export function DashaPage() {
 
     return { mahadasha, antardasha, pratyantardasha, sookshma };
   }, [data, selectedDate]);
-
-  // Timeline animation logic
-  useEffect(() => {
-    if (!isPlaying || !timelineBounds) return;
-
-    const animate = (timestamp: number) => {
-      // Update every 100ms (10 days per second = ~100ms per day)
-      const msPerDay = 100;
-
-      if (timestamp - lastUpdateRef.current >= msPerDay) {
-        setSelectedDate((prevDate) => {
-          const nextDate = new Date(prevDate);
-          nextDate.setDate(nextDate.getDate() + 1);
-
-          // Stop at end of timeline
-          if (nextDate >= timelineBounds.endDate) {
-            setIsPlaying(false);
-            return timelineBounds.endDate;
-          }
-
-          return nextDate;
-        });
-
-        lastUpdateRef.current = timestamp;
-      }
-
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animationRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [isPlaying, timelineBounds]);
-
-  // Control handlers
-  const handleStepForward = () => {
-    if (!timelineBounds) return;
-    setSelectedDate((prev) => {
-      const next = new Date(prev);
-      next.setDate(next.getDate() + 1);
-      // Don't go beyond end date
-      return next <= timelineBounds.endDate ? next : timelineBounds.endDate;
-    });
-  };
-
-  const handleStepBackward = () => {
-    if (!timelineBounds) return;
-    setSelectedDate((prev) => {
-      const next = new Date(prev);
-      next.setDate(next.getDate() - 1);
-      // Don't go before birth date
-      return next >= timelineBounds.birthDate ? next : timelineBounds.birthDate;
-    });
-  };
-
-  const handleJumpToToday = () => {
-    setSelectedDate(new Date());
-    setIsPlaying(false);
-  };
 
   // Loading state
   if (isLoading) {
@@ -216,40 +123,12 @@ export function DashaPage() {
           birthDate={data.birthDateTimeLocal}
         />
 
-        {/* Play controls */}
+        {/* Date-time picker */}
         <TimelinePlayControls
-          isPlaying={isPlaying}
-          onTogglePlay={() => setIsPlaying((prev) => !prev)}
-          onStepForward={handleStepForward}
-          onStepBackward={handleStepBackward}
-          onJumpToToday={handleJumpToToday}
+          selectedDate={selectedDate}
+          onDateTimeChange={setSelectedDate}
           className="mt-4"
         />
-      </div>
-
-      {/* Date Picker Section */}
-      <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-6 mb-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <label
-            htmlFor="date-picker"
-            className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 whitespace-nowrap"
-          >
-            Select Date:
-          </label>
-          <input
-            id="date-picker"
-            type="date"
-            value={formatDateForInput(selectedDate)}
-            onChange={handleDateChange}
-            className="flex-1 px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-          <button
-            onClick={() => setSelectedDate(new Date())}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-md transition-colors whitespace-nowrap"
-          >
-            Today
-          </button>
-        </div>
       </div>
 
       {/* Display periods for selected date */}
