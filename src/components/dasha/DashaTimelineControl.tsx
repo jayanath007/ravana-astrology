@@ -46,6 +46,16 @@ const formatSinhalaDateTime = (date: Date, format: 'long' | 'short' = 'long'): s
   }
 };
 
+// Helper function to format only date (no time)
+const formatSinhalaDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+
+  // Format: DD-MM-YYYY
+  return `${day}-${month}-${year}`;
+};
+
 export function DashaTimelineControl({
   selectedDate,
   setSelectedDate,
@@ -285,7 +295,7 @@ export function DashaTimelineControl({
           {/* First Mahadasha Start */}
           <div className="flex flex-col items-start">
             {mahadashaPeriods.length > 0 && (
-                <span className="text-neutral-800 dark:text-neutral-200 text-base">ආරම්භය   {formatSinhalaDateTime(mahadashaPeriods[0].startDateLocal, 'short')}</span>
+                <span className="text-neutral-800 dark:text-neutral-200 text-base">ආරම්භය   {formatSinhalaDate(mahadashaPeriods[0].startDateLocal)}</span>
             )}
           </div>
 
@@ -293,7 +303,7 @@ export function DashaTimelineControl({
           <div className="flex flex-col items-end">
             {mahadashaPeriods.length > 0 && (
                 <span className="text-neutral-800 dark:text-neutral-200 text-base">
-                  අවසානය {formatSinhalaDateTime(mahadashaPeriods[mahadashaPeriods.length - 1].endDateLocal, 'short')}
+                  අවසානය {formatSinhalaDate(mahadashaPeriods[mahadashaPeriods.length - 1].endDateLocal)}
                 </span>
             )}
           </div>
