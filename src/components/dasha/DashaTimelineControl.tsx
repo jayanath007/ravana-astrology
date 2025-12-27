@@ -129,31 +129,23 @@ export function DashaTimelineControl({
             විම්ශෝත්තරී දශා කාලරාමුව 120 වසර
           </span> */}
         </div>
-    <div className="flex justify-between mb-3 text-sm px-1">
-          {/* First Mahadasha Start */}
-          <div className="flex flex-col items-start">
-            {mahadashaPeriods.length > 0 && (
-              <>
-                <span className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">ආරම්භය</span>
-                <span className="font-bold text-neutral-800 dark:text-neutral-200 text-base">
-                  {formatSinhalaDateTime(mahadashaPeriods[0].startDateLocal, 'short')}
-                </span>
-              </>
-            )}
-          </div>
 
-          {/* Last Mahadasha End */}
-          <div className="flex flex-col items-end">
-            {mahadashaPeriods.length > 0 && (
-              <>
-                <span className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">අවසානය</span>
-                <span className="font-bold text-neutral-800 dark:text-neutral-200 text-base">
-                  {formatSinhalaDateTime(mahadashaPeriods[mahadashaPeriods.length - 1].endDateLocal, 'short')}
-                </span>
-              </>
-            )}
+
+
+              {/* Display periods for selected date */}
+        {selectedDatePeriods && (
+          <div className="mt-6">
+            <DatePeriodDisplay
+              selectedDate={selectedDate}
+              mahadasha={selectedDatePeriods.mahadasha}
+              antardasha={selectedDatePeriods.antardasha}
+              pratyantardasha={selectedDatePeriods.pratyantardasha}
+              sookshma={selectedDatePeriods.sookshma}
+            />
           </div>
-        </div>
+        )}
+
+     
         <div className="relative h-8 bg-gradient-to-b from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-700 rounded-xl shadow-md border border-neutral-300 dark:border-neutral-600 overflow-visible">
           {/* Mahadasha Segments with Labels */}
           {mahadashaPeriods.map((mahadasha, index) => {
@@ -287,18 +279,27 @@ export function DashaTimelineControl({
           </div>
         </div>
 
-        {/* Display periods for selected date */}
-        {selectedDatePeriods && (
-          <div className="mt-6">
-            <DatePeriodDisplay
-              selectedDate={selectedDate}
-              mahadasha={selectedDatePeriods.mahadasha}
-              antardasha={selectedDatePeriods.antardasha}
-              pratyantardasha={selectedDatePeriods.pratyantardasha}
-              sookshma={selectedDatePeriods.sookshma}
-            />
+
+
+  <div className="flex justify-between  text-sm px-1">
+          {/* First Mahadasha Start */}
+          <div className="flex flex-col items-start">
+            {mahadashaPeriods.length > 0 && (
+                <span className="text-neutral-800 dark:text-neutral-200 text-base">ආරම්භය   {formatSinhalaDateTime(mahadashaPeriods[0].startDateLocal, 'short')}</span>
+            )}
           </div>
-        )}
+
+          {/* Last Mahadasha End */}
+          <div className="flex flex-col items-end">
+            {mahadashaPeriods.length > 0 && (
+                <span className="text-neutral-800 dark:text-neutral-200 text-base">
+                  අවසානය {formatSinhalaDateTime(mahadashaPeriods[mahadashaPeriods.length - 1].endDateLocal, 'short')}
+                </span>
+            )}
+          </div>
+        </div>
+        
+  
       </div>
     </div>
   );
