@@ -1,17 +1,9 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useVimshottariDasha } from '@/hooks/useVimshottariDasha';
 import { saveBirthDetails, loadBirthDetails } from '@/utils/sessionStorage';
-import { DatePeriodDisplay } from './DatePeriodDisplay';
 import { DashaTimelineControl } from './DashaTimelineControl';
-import { TimelinePlayControls } from './TimelinePlayControls';
 import { DashaLevel } from '@/dashaApiIntegration/vimshottari-dasha.types';
-import {
-  findActiveMahadasha,
-  findActiveAntardasha,
-  findActivePratyantardasha,
-  findActiveSookshma,
-} from '@/dashaApiIntegration/vimshottari-dasha.utils';
 
 /**
  * Main page component for displaying Vimshottari Dasha data
@@ -53,19 +45,6 @@ export function DashaPage() {
     enabled: !!birthDetails,
   });
 
-  // Calculate periods for selected date
-  const selectedDatePeriods = useMemo(() => {
-    if (!data) return null;
-
-    const mahadasha = findActiveMahadasha(data.mahadashaPeriods, selectedDate);
-    const antardasha = mahadasha ? findActiveAntardasha(mahadasha, selectedDate) : undefined;
-    const pratyantardasha =
-      antardasha ? findActivePratyantardasha(antardasha, selectedDate) : undefined;
-    const sookshma =
-      pratyantardasha ? findActiveSookshma(pratyantardasha, selectedDate) : undefined;
-
-    return { mahadasha, antardasha, pratyantardasha, sookshma };
-  }, [data, selectedDate]);
 
   // Loading state
   if (isLoading) {
@@ -115,20 +94,7 @@ export function DashaPage() {
           mahadashaPeriods={data.mahadashaPeriods}
           birthDate={data.birthDateTimeLocal}
         />
-
-   
       </div>
-
-      {/* Display periods for selected date */}
-      {selectedDatePeriods && (
-        <DatePeriodDisplay
-          selectedDate={selectedDate}
-          mahadasha={selectedDatePeriods.mahadasha}
-          antardasha={selectedDatePeriods.antardasha}
-          pratyantardasha={selectedDatePeriods.pratyantardasha}
-          sookshma={selectedDatePeriods.sookshma}
-        />
-      )}
     </main>
   );
 }

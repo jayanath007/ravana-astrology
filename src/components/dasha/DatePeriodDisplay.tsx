@@ -1,5 +1,4 @@
 import {
-  formatDateRange,
   getPlanetColor,
   getPlanetNameSinhala,
 } from "@/dashaApiIntegration/vimshottari-dasha.utils";
@@ -10,6 +9,34 @@ import type {
   ParsedSookshma,
   DashaPlanet,
 } from "@/dashaApiIntegration/vimshottari-dasha.types";
+
+// Helper function to format date and time in Sinhala format
+const formatSinhalaDateTime = (date: Date, format: 'long' | 'short' = 'long'): string => {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+
+  // Determine AM/PM in Sinhala
+  const period = hours >= 12 ? 'ප.ව.' : 'පෙ.ව.';
+
+  // Convert to 12-hour format
+  const hours12 = hours % 12 || 12;
+
+  if (format === 'long') {
+    // Format: YYYY-MM-DD – ප.ව./පෙ.ව. hh:mm
+    return `${year}-${month}-${day} – ${period} ${hours12}:${minutes}`;
+  } else {
+    // Format: DD-MM-YYYY, ප.ව./පෙ.ව. hh:mm
+    return `${day}-${month}-${year}, ${period} ${hours12}:${minutes}`;
+  }
+};
+
+// Helper function to format date range in Sinhala
+const formatSinhalaDateRange = (startDate: Date, endDate: Date): string => {
+  return `${formatSinhalaDateTime(startDate, 'short')} - ${formatSinhalaDateTime(endDate, 'short')}`;
+};
 
 interface DatePeriodDisplayProps {
   selectedDate: Date;
@@ -45,7 +72,7 @@ function DashaCard({
         </p>
         <p >
           <span className="text-3xl font-bold" style={{ color: color }}> {sinhalaName} </span>{" "}
-          <span> {formatDateRange(startDate, endDate, "si-LK")} </span>
+          <span className="text-sm"> {formatSinhalaDateRange(startDate, endDate)} </span>
         </p>
       </div>
     </div>
@@ -66,11 +93,10 @@ export function DatePeriodDisplay({
     return (
       <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-6">
         <h2 className="text-xl font-bold mb-4 text-neutral-900 dark:text-neutral-100">
-          Dasha Periods for {selectedDate.toLocaleDateString()}
+          දශා කාල පරාසය සඳහා {formatSinhalaDateTime(selectedDate, 'short')}
         </h2>
         <p className="text-neutral-600 dark:text-neutral-400">
-          No Dasha periods found for this date. The date may be outside the
-          calculated range.
+          මෙම දිනය සඳහා දශා කාල පරාසය හමු නොවීය. දිනය ගණන් කළ පරාසයෙන් පිටත විය හැකිය.
         </p>
       </div>
     );
