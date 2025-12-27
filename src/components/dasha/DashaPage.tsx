@@ -1,11 +1,10 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useVimshottariDasha } from '@/hooks/useVimshottariDasha';
 import { saveBirthDetails, loadBirthDetails } from '@/utils/sessionStorage';
-import { NakshatraInfoCard } from './NakshatraInfoCard';
-import { CurrentPeriodsCard } from './CurrentPeriodsCard';
-import { MahadashaTimeline } from './MahadashaTimeline';
 import { DatePeriodDisplay } from './DatePeriodDisplay';
+import { DashaTimelineControl } from './DashaTimelineControl';
+import { TimelinePlayControls } from './TimelinePlayControls';
 import { DashaLevel } from '@/dashaApiIntegration/vimshottari-dasha.types';
 import {
   findActiveMahadasha,
@@ -46,6 +45,11 @@ export function DashaPage() {
   // State for selected date (default to today)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
+  // State for timeline animation
+  const [isPlaying, setIsPlaying] = useState(false);
+  const animationRef = useRef<number | null>(null);
+  const lastUpdateRef = useRef<number>(0);
+
   // Format date for input (YYYY-MM-DD)
   const formatDateForInput = (date: Date): string => {
     const year = date.getFullYear();
@@ -70,6 +74,15 @@ export function DashaPage() {
     enabled: !!birthDetails,
   });
 
+  // Calculate timeline bounds (birth date to birth date + 120 years)
+  const timelineBounds = useMemo(() => {
+    if (!data) return null;
+    const birthDate = data.birthDateTimeLocal;
+    const endDate = new Date(birthDate);
+    endDate.setFullYear(birthDate.getFullYear() + 120);
+    return { birthDate, endDate };
+  }, [data]);
+
   // Calculate periods for selected date
   const selectedDatePeriods = useMemo(() => {
     if (!data) return null;
@@ -83,6 +96,69 @@ export function DashaPage() {
 
     return { mahadasha, antardasha, pratyantardasha, sookshma };
   }, [data, selectedDate]);
+
+  // Timeline animation logic
+  useEffect(() => {
+    if (!isPlaying || !timelineBounds) return;
+
+    const animate = (timestamp: number) => {
+      // Update every 100ms (10 days per second = ~100ms per day)
+      const msPerDay = 100;
+
+      if (timestamp - lastUpdateRef.current >= msPerDay) {
+        setSelectedDate((prevDate) => {
+          const nextDate = new Date(prevDate);
+          nextDate.setDate(nextDate.getDate() + 1);
+
+          // Stop at end of timeline
+          if (nextDate >= timelineBounds.endDate) {
+            setIsPlaying(false);
+            return timelineBounds.endDate;
+          }
+
+          return nextDate;
+        });
+
+        lastUpdateRef.current = timestamp;
+      }
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isPlaying, timelineBounds]);
+
+  // Control handlers
+  const handleStepForward = () => {
+    if (!timelineBounds) return;
+    setSelectedDate((prev) => {
+      const next = new Date(prev);
+      next.setDate(next.getDate() + 1);
+      // Don't go beyond end date
+      return next <= timelineBounds.endDate ? next : timelineBounds.endDate;
+    });
+  };
+
+  const handleStepBackward = () => {
+    if (!timelineBounds) return;
+    setSelectedDate((prev) => {
+      const next = new Date(prev);
+      next.setDate(next.getDate() - 1);
+      // Don't go before birth date
+      return next >= timelineBounds.birthDate ? next : timelineBounds.birthDate;
+    });
+  };
+
+  const handleJumpToToday = () => {
+    setSelectedDate(new Date());
+    setIsPlaying(false);
+  };
 
   // Loading state
   if (isLoading) {
@@ -126,6 +202,31 @@ export function DashaPage() {
         Vimshottari Dasha
       </h1>
 
+      {/* Timeline Section */}
+      <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-6 mb-6">
+        <h2 className="text-xl font-bold mb-4 text-neutral-900 dark:text-neutral-100">
+          Timeline Controls
+        </h2>
+
+        {/* Timeline with markers */}
+        <DashaTimelineControl
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          mahadashaPeriods={data.mahadashaPeriods}
+          birthDate={data.birthDateTimeLocal}
+        />
+
+        {/* Play controls */}
+        <TimelinePlayControls
+          isPlaying={isPlaying}
+          onTogglePlay={() => setIsPlaying((prev) => !prev)}
+          onStepForward={handleStepForward}
+          onStepBackward={handleStepBackward}
+          onJumpToToday={handleJumpToToday}
+          className="mt-4"
+        />
+      </div>
+
       {/* Date Picker Section */}
       <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-6 mb-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -153,75 +254,14 @@ export function DashaPage() {
 
       {/* Display periods for selected date */}
       {selectedDatePeriods && (
-        <div className="mb-6">
-          <DatePeriodDisplay
-            selectedDate={selectedDate}
-            mahadasha={selectedDatePeriods.mahadasha}
-            antardasha={selectedDatePeriods.antardasha}
-            pratyantardasha={selectedDatePeriods.pratyantardasha}
-            sookshma={selectedDatePeriods.sookshma}
-          />
-        </div>
+        <DatePeriodDisplay
+          selectedDate={selectedDate}
+          mahadasha={selectedDatePeriods.mahadasha}
+          antardasha={selectedDatePeriods.antardasha}
+          pratyantardasha={selectedDatePeriods.pratyantardasha}
+          sookshma={selectedDatePeriods.sookshma}
+        />
       )}
-
-      {/* Grid layout for cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Birth Nakshatra Info */}
-        <NakshatraInfoCard birthNakshatra={data.birthNakshatra} />
-
-        {/* Summary Statistics */}
-        <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-bold mb-4 text-neutral-900 dark:text-neutral-100">
-            Summary
-          </h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                Total Mahadashas
-              </p>
-              <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-                {data.mahadashaPeriods.length}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                Total Periods
-              </p>
-              <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-                {data.totalPeriodsCount}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                Detail Level
-              </p>
-              <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-                {data.detailLevel === 1 && 'Mahadasha'}
-                {data.detailLevel === 2 && 'Antardasha'}
-                {data.detailLevel === 3 && 'Pratyantardasha'}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                Years Calculated
-              </p>
-              <p className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-                {data.yearsCalculated}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Current Periods */}
-      <CurrentPeriodsCard
-        currentMahadasha={data.currentMahadasha}
-        currentAntardasha={data.currentAntardasha}
-        currentPratyantardasha={data.currentPratyantardasha}
-      />
-
-      {/* Mahadasha Timeline */}
-      <MahadashaTimeline mahadashaPeriods={data.mahadashaPeriods} />
     </main>
   );
 }

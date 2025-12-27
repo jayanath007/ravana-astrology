@@ -37,9 +37,9 @@ function DashaCard({
   const sinhalaName = getPlanetNameSinhala(planet);
 
   return (
-    <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg overflow-hidden">
+    <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg border border-neutral-300 dark:border-neutral-600 overflow-hidden">
       {/* Header with label and planet */}
-      <div className="p-6 bg-white dark:bg-neutral-800">
+      <div className="p-2 bg-white dark:bg-neutral-800">
         <p className="text-1xl font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-2">
           {label}
         </p>
@@ -76,14 +76,9 @@ export function DatePeriodDisplay({
     );
   }
 
-  // Check if all levels are available
-  const hasSookshma = !!sookshma;
-
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-neutral-900 dark:text-neutral-100">
-        Dasha Periods for {selectedDate.toLocaleDateString()}
-      </h2>
+ 
 
       {/* Flex layout for cards with separators */}
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2">
@@ -114,7 +109,7 @@ export function DatePeriodDisplay({
               endDate={antardasha.endDateLocal}
             />
           ) : (
-            <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow-lg p-6 flex items-center justify-center h-full">
+            <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow-lg border border-neutral-300 dark:border-neutral-600 p-6 flex items-center justify-center h-full">
               <div className="text-center">
                 <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-2">
                   අන්තරදාශාව
@@ -146,7 +141,7 @@ export function DatePeriodDisplay({
               endDate={pratyantardasha.endDateLocal}
             />
           ) : (
-            <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow-lg p-6 flex items-center justify-center h-full">
+            <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow-lg border border-neutral-300 dark:border-neutral-600 p-6 flex items-center justify-center h-full">
               <div className="text-center">
                 <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-2">
                   වීදසාව
@@ -178,7 +173,7 @@ export function DatePeriodDisplay({
               endDate={sookshma.endDateLocal}
             />
           ) : (
-            <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow-lg p-6 flex items-center justify-center h-full">
+            <div className="bg-neutral-100 dark:bg-neutral-800 rounded-lg shadow-lg border border-neutral-300 dark:border-neutral-600 p-6 flex items-center justify-center h-full">
               <div className="text-center">
                 <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-2">
                   සුක්ෂ්මදාශාව
@@ -195,41 +190,7 @@ export function DatePeriodDisplay({
         </div>
       </div>
 
-      {/* Status message */}
-      <div className="mt-6 p-4 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
-        {hasSookshma ? (
-          <p className="text-sm text-green-600 dark:text-green-400 flex items-center">
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clipRule="evenodd"
-              />
-            </svg>
-            All 4 levels of Dasha periods are displayed
-          </p>
-        ) : (
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 flex items-center">
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Some Dasha levels are not available. Increase detail level to see
-            all periods.
-          </p>
-        )}
-      </div>
+ 
     </div>
   );
 }
