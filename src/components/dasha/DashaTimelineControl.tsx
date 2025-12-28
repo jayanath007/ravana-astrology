@@ -53,14 +53,7 @@ export function DashaTimelineControl({
     <div className="w-full space-y-4">
       {/* Timeline Container */}
       <div className="relative w-full">
-        {/* Timeline Duration and Controls */}
-        <div className="flex flex-col items-end justify-center">
-          <TimelinePlayControls
-            selectedDate={selectedDate}
-            onDateTimeChange={setSelectedDate}
-            className="mt-4"
-          />
-        </div>
+
 
         {/* Display periods for selected date */}
         {selectedDatePeriods && (

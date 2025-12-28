@@ -4,6 +4,7 @@ import { useVimshottariDasha } from '@/hooks/useVimshottariDasha';
 import { saveBirthDetails, loadBirthDetails } from '@/utils/sessionStorage';
 import { DashaTimelineControl } from './DashaTimelineControl';
 import { DashaLevel } from '@/dashaApiIntegration/vimshottari-dasha.types';
+import { TimelinePlayControls } from './TimelinePlayControls';
 
 /**
  * Main page component for displaying Vimshottari Dasha data
@@ -86,6 +87,16 @@ export function DashaPage() {
     <main className="container mx-auto p-4 min-h-screen">
       {/* Timeline Section */}
       <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-6 mb-6">
+
+        {/* Timeline Duration and Controls */}
+        <div className="flex flex-col items-end justify-center">
+          <TimelinePlayControls
+            selectedDate={selectedDate}
+            onDateTimeChange={setSelectedDate}
+            className="mt-4"
+          />
+        </div>
+
 
         {/* Timeline with markers */}
         <DashaTimelineControl
