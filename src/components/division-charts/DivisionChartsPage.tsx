@@ -4,6 +4,8 @@ import { ChartCardList } from "./ChartCardList";
 import { saveBirthDetails, loadBirthDetails } from "@/utils/sessionStorage";
 import { TimelinePlayControls } from "@/components/dasha/TimelinePlayControls";
 import { DashaTimelineControl } from "@/components/dasha/DashaTimelineControl";
+import type { SelectedDatePeriods } from "@/components/dasha/DashaTimelineControl";
+import { DatePeriodDisplay } from "@/components/dasha/DatePeriodDisplay";
 import { DashaLevel } from "@/dashaApiIntegration/vimshottari-dasha.types";
 import type { BirthDetails } from "@/types/birthChart";
 
@@ -36,6 +38,9 @@ export function DivisionChartsPage({
 
   // State for selected date (default to current date and time)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  // State for storing calculated dasha periods
+  const [selectedDatePeriods, setSelectedDatePeriods] = useState<SelectedDatePeriods | null>(null);
 
   // Data source priority: props → location state → sessionStorage
   const savedDetails = loadBirthDetails();
@@ -74,18 +79,35 @@ export function DivisionChartsPage({
           className="mt-4"
         />
       </div>
-   {/* Timeline with markers */}
+
+
+      {/* Display periods for selected date */}
+      {selectedDatePeriods && (
+        <div className="mb-6">
+          <DatePeriodDisplay
+            selectedDate={selectedDate}
+            mahadasha={selectedDatePeriods.mahadasha}
+            antardasha={selectedDatePeriods.antardasha}
+            pratyantardasha={selectedDatePeriods.pratyantardasha}
+            sookshma={selectedDatePeriods.sookshma}
+          />
+        </div>
+      )}
+
+      {/* Three Charts Grid Layout */}
+      <ChartCardList birthDetails={birthDetails} />
+
+
+
+      {/* Timeline with markers */}
       <DashaTimelineControl
         birthDetails={birthDetails}
         detailLevel={DashaLevel.Sookshma}
         yearsToCalculate={120}
         selectedDate={selectedDate}
         onDateChange={setSelectedDate}
+        onPeriodsCalculated={setSelectedDatePeriods}
       />
-      {/* Three Charts Grid Layout */}
-      <ChartCardList birthDetails={birthDetails} />
-
-   
     </main>
   );
 }
