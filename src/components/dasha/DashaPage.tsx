@@ -1,13 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useVimshottariDasha } from '@/hooks/useVimshottariDasha';
 import { saveBirthDetails, loadBirthDetails } from '@/utils/sessionStorage';
 import { DashaTimelineControl } from './DashaTimelineControl';
 import { DashaLevel } from '@/dashaApiIntegration/vimshottari-dasha.types';
-import { TimelinePlayControls } from './TimelinePlayControls';
 
 /**
- * Main page component for displaying Vimshottari Dasha data
+ * Main page component for displaying Vimshottari Dasha data.
+ * DashaTimelineControl is self-contained and handles its own API calling and loading state.
  */
 export function DashaPage() {
   const location = useLocation();
@@ -35,75 +34,15 @@ export function DashaPage() {
     }
   }, [birthDetails, navigate]);
 
-  // State for selected date (default to current date and time)
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-
-  // Fetch Dasha data
-  const { data, isLoading, error, retry } = useVimshottariDasha({
-    birthDetails,
-    detailLevel: DashaLevel.Sookshma, // Level 4 - Shows all periods including Sookshma
-    yearsToCalculate: 120,
-    enabled: !!birthDetails,
-  });
-
-
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="container mx-auto p-4 min-h-screen flex items-center justify-center">
-        <div className="text-xl text-neutral-600 dark:text-neutral-400">
-          Calculating Vimshottari Dasha...
-        </div>
-      </div>
-    );
-  }
-
-  // Error state
-  if (error) {
-    return (
-      <div className="container mx-auto p-4 min-h-screen flex items-center justify-center">
-        <div className="max-w-md w-full p-6 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 rounded-lg">
-          <h2 className="text-xl font-bold text-red-700 dark:text-red-300 mb-3">
-            Error Loading Dasha Data
-          </h2>
-          <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-          <button
-            onClick={retry}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition-colors"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Success state with data
-  if (!data) {
-    return null;
-  }
-
   return (
     <main className="container mx-auto p-4 min-h-screen">
       {/* Timeline Section */}
       <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-6 mb-6">
-
-        {/* Timeline Duration and Controls */}
-        <div className="flex flex-col items-end justify-center">
-          <TimelinePlayControls
-            selectedDate={selectedDate}
-            onDateTimeChange={setSelectedDate}
-            className="mt-4"
-          />
-        </div>
-
-
         {/* Timeline with markers */}
         <DashaTimelineControl
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
-          mahadashaPeriods={data.mahadashaPeriods}
-          birthDate={data.birthDateTimeLocal}
+          birthDetails={birthDetails}
+          detailLevel={DashaLevel.Sookshma}
+          yearsToCalculate={120}
         />
       </div>
     </main>
