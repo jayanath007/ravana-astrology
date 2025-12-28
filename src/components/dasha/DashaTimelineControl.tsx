@@ -4,7 +4,6 @@ import type { DashaLevel } from "@/dashaApiIntegration/vimshottari-dasha.types";
 import type { BirthDetails } from "@/types/birthChart";
 import { useVimshottariDasha } from "@/hooks/useVimshottariDasha";
 import { DatePeriodDisplay } from "./DatePeriodDisplay";
-import { TimelinePlayControls } from "./TimelinePlayControls";
 import { useTimelineCalculations } from "@/hooks/useTimelineCalculations";
 import { MahadashaSegments } from "./timeline/MahadashaSegments";
 import { MahadashaDividers } from "./timeline/MahadashaDividers";
@@ -23,6 +22,10 @@ interface DashaTimelineControlProps {
   detailLevel?: DashaLevel;
   /** Number of years to calculate from birth (1-120). Default: 120 */
   yearsToCalculate?: number;
+  /** Optional controlled selected date (for external control) */
+  selectedDate?: Date;
+  /** Optional callback when selected date changes (for external control) */
+  onDateChange?: (date: Date) => void;
 }
 
 /**
@@ -43,9 +46,15 @@ export function DashaTimelineControl({
   birthDetails,
   detailLevel = 4, // Sookshma level by default
   yearsToCalculate = 120,
+  selectedDate: controlledSelectedDate,
+  onDateChange,
 }: DashaTimelineControlProps) {
-  // Internal state for selected date
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  // Internal state for selected date (used when not controlled)
+  const [internalSelectedDate, setInternalSelectedDate] = useState<Date>(new Date());
+
+  // Use controlled date if provided, otherwise use internal state
+  const selectedDate = controlledSelectedDate ?? internalSelectedDate;
+  const setSelectedDate = onDateChange ?? setInternalSelectedDate;
 
   // Fetch dasha data using custom hook
   const { data, isLoading, error, retry } = useVimshottariDasha({
@@ -134,15 +143,6 @@ export function DashaTimelineControl({
 
   return (
     <div className="w-full space-y-4">
-      {/* Date/Time Picker Controls */}
-      <div className="flex flex-col items-end justify-center">
-        <TimelinePlayControls
-          selectedDate={selectedDate}
-          onDateTimeChange={setSelectedDate}
-          className="mt-4"
-        />
-      </div>
-
       {/* Timeline Container */}
       <div className="relative w-full">
         {/* Display periods for selected date */}
