@@ -3,10 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ThathkalaChart } from "@/components/division-charts/ThathkalaChart";
 import { saveBirthDetails, loadBirthDetails } from "@/utils/sessionStorage";
 import { TimelinePlayControls } from "@/components/dasha/TimelinePlayControls";
-import { DashaTimelineControl } from "@/components/dasha/DashaTimelineControl";
-import type { SelectedDatePeriods } from "@/components/dasha/DashaTimelineControl";
-import { DatePeriodDisplay } from "@/components/dasha/DatePeriodDisplay";
-import { DashaLevel } from "@/dashaApiIntegration/vimshottari-dasha.types";
 import type { BirthDetails } from "@/types/birthChart";
 import { useDebounce } from "@/hooks/useDebounce";
 
@@ -26,9 +22,7 @@ interface ThathkalaPageProps {
  *
  * Features:
  * - Interactive timeline controls for selecting date/time
- * - Dasha period display for the selected date
  * - Full-width Thathkala chart
- * - Visual timeline with Vimshottari Dasha periods
  *
  * Supports data from props, location state, or sessionStorage (in that priority order).
  * Implements accessibility features and error handling best practices.
@@ -46,9 +40,6 @@ export function ThathkalaPage({
 
   // Debounce selectedDate for chart updates (300ms delay)
   const debouncedSelectedDate = useDebounce(selectedDate, 300);
-
-  // State for storing calculated dasha periods
-  const [selectedDatePeriods, setSelectedDatePeriods] = useState<SelectedDatePeriods | null>(null);
 
   // Data source priority: props → location state → sessionStorage
   const savedDetails = loadBirthDetails();
