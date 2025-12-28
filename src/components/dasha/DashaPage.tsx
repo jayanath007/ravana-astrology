@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { saveBirthDetails, loadBirthDetails } from '@/utils/sessionStorage';
 import { DashaTimelineControl } from './DashaTimelineControl';
+import type { SelectedDatePeriods } from './DashaTimelineControl';
+import { DatePeriodDisplay } from './DatePeriodDisplay';
 import { TimelinePlayControls } from './TimelinePlayControls';
 import { DashaLevel } from '@/dashaApiIntegration/vimshottari-dasha.types';
 
@@ -15,6 +17,9 @@ export function DashaPage() {
 
   // State for selected date (default to current date and time)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  // State for storing calculated dasha periods
+  const [selectedDatePeriods, setSelectedDatePeriods] = useState<SelectedDatePeriods | null>(null);
 
   // Data sourcing priority: location.state → sessionStorage
   const savedDetails = loadBirthDetails();
@@ -51,6 +56,19 @@ export function DashaPage() {
           />
         </div>
 
+        {/* Display periods for selected date */}
+        {selectedDatePeriods && (
+          <div className="mb-6">
+            <DatePeriodDisplay
+              selectedDate={selectedDate}
+              mahadasha={selectedDatePeriods.mahadasha}
+              antardasha={selectedDatePeriods.antardasha}
+              pratyantardasha={selectedDatePeriods.pratyantardasha}
+              sookshma={selectedDatePeriods.sookshma}
+            />
+          </div>
+        )}
+
         {/* Timeline with markers */}
         <DashaTimelineControl
           birthDetails={birthDetails}
@@ -58,6 +76,7 @@ export function DashaPage() {
           yearsToCalculate={120}
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
+          onPeriodsCalculated={setSelectedDatePeriods}
         />
       </div>
     </main>

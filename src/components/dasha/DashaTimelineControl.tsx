@@ -1,11 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { DashaLevel } from "@/dashaApiIntegration/vimshottari-dasha.types";
 import type { BirthDetails } from "@/types/birthChart";
+import type {
+  ParsedMahadasha,
+  ParsedAntardasha,
+  ParsedPratyantardasha,
+  ParsedSookshma,
+} from "@/dashaApiIntegration/vimshottari-dasha.types";
 import { useVimshottariDasha } from "@/hooks/useVimshottariDasha";
-import { DatePeriodDisplay } from "./DatePeriodDisplay";
 import { DashaTimeline } from "./DashaTimeline";
 import { useTimelineCalculations } from "@/hooks/useTimelineCalculations";
 import { TAILWIND_CLASSES } from "@/styles/theme-colors";
+
+/**
+ * Represents the calculated dasha periods for a selected date
+ */
+export interface SelectedDatePeriods {
+  mahadasha: ParsedMahadasha | undefined;
+  antardasha: ParsedAntardasha | undefined;
+  pratyantardasha: ParsedPratyantardasha | undefined;
+  sookshma: ParsedSookshma | undefined;
+}
 
 /**
  * Props for the DashaTimelineControl component
@@ -21,6 +36,8 @@ interface DashaTimelineControlProps {
   selectedDate?: Date;
   /** Optional callback when selected date changes (for external control) */
   onDateChange?: (date: Date) => void;
+  /** Optional callback when periods are calculated for the selected date */
+  onPeriodsCalculated?: (periods: SelectedDatePeriods) => void;
 }
 
 /**
@@ -43,6 +60,7 @@ export function DashaTimelineControl({
   yearsToCalculate = 120,
   selectedDate: controlledSelectedDate,
   onDateChange,
+  onPeriodsCalculated,
 }: DashaTimelineControlProps) {
   // Internal state for selected date (used when not controlled)
   const [internalSelectedDate, setInternalSelectedDate] = useState<Date>(new Date());
@@ -76,6 +94,13 @@ export function DashaTimelineControl({
     selectedDate,
     mahadashaPeriods,
   });
+
+  // Notify parent when periods are calculated
+  useEffect(() => {
+    if (onPeriodsCalculated && selectedDatePeriods) {
+      onPeriodsCalculated(selectedDatePeriods);
+    }
+  }, [selectedDatePeriods, onPeriodsCalculated]);
 
   // Loading state
   if (isLoading) {
@@ -127,19 +152,6 @@ export function DashaTimelineControl({
     <div className="w-full">
       {/* Timeline Container */}
       <div className="relative w-full">
-        {/* Display periods for selected date */}
-        {selectedDatePeriods && (
-          <div className="mb-3">
-            <DatePeriodDisplay
-              selectedDate={selectedDate}
-              mahadasha={selectedDatePeriods.mahadasha}
-              antardasha={selectedDatePeriods.antardasha}
-              pratyantardasha={selectedDatePeriods.pratyantardasha}
-              sookshma={selectedDatePeriods.sookshma}
-            />
-          </div>
-        )}
-
         {/* DashaTimeline Component */}
         <DashaTimeline
           mahadashaPeriods={mahadashaPeriods}
