@@ -93,7 +93,7 @@ export function AstrologicalGrid({
   }, [planetSigns, offsetValue, initializeGrid]);
 
   return (
-    <div className="container mx-auto p-4 min-h-screen">
+    <div className="container mx-auto p-4">
       {showBackButton && (
         <div className="mb-6">
         </div>

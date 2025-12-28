@@ -142,7 +142,7 @@ export function DashaTimelineControl({
   }
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full">
       {/* Timeline Container */}
       <div className="relative w-full">
         {/* Display periods for selected date */}

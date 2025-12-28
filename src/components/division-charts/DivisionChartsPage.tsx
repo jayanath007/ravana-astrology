@@ -1,7 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ChartCardList } from "./ChartCardList";
 import { saveBirthDetails, loadBirthDetails } from "@/utils/sessionStorage";
+import { TimelinePlayControls } from "@/components/dasha/TimelinePlayControls";
+import { DashaTimelineControl } from "@/components/dasha/DashaTimelineControl";
+import { DashaLevel } from "@/dashaApiIntegration/vimshottari-dasha.types";
 import type { BirthDetails } from "@/types/birthChart";
 
 /**
@@ -30,6 +33,9 @@ export function DivisionChartsPage({
 }: DivisionChartsPageProps = {}) {
   const location = useLocation();
   const navigate = useNavigate();
+
+  // State for selected date (default to current date and time)
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   // Data source priority: props → location state → sessionStorage
   const savedDetails = loadBirthDetails();
@@ -60,14 +66,26 @@ export function DivisionChartsPage({
       role="main"
       aria-label="Division Charts Page"
     >
-
-      {/* Page Title */}
-      <h1 className="text-2xl font-bold text-center mb-6 text-neutral-900 dark:text-neutral-100">
-        Division Charts
-      </h1>
-
+      {/* Timeline Duration and Controls */}
+      <div className="flex flex-col items-end justify-center mb-6">
+        <TimelinePlayControls
+          selectedDate={selectedDate}
+          onDateTimeChange={setSelectedDate}
+          className="mt-4"
+        />
+      </div>
+   {/* Timeline with markers */}
+      <DashaTimelineControl
+        birthDetails={birthDetails}
+        detailLevel={DashaLevel.Sookshma}
+        yearsToCalculate={120}
+        selectedDate={selectedDate}
+        onDateChange={setSelectedDate}
+      />
       {/* Three Charts Grid Layout */}
       <ChartCardList birthDetails={birthDetails} />
+
+   
     </main>
   );
 }
