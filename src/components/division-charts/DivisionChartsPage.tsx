@@ -8,6 +8,7 @@ import type { SelectedDatePeriods } from "@/components/dasha/DashaTimelineContro
 import { DatePeriodDisplay } from "@/components/dasha/DatePeriodDisplay";
 import { DashaLevel } from "@/dashaApiIntegration/vimshottari-dasha.types";
 import type { BirthDetails } from "@/types/birthChart";
+import { useDebounce } from "@/hooks/useDebounce";
 
 /**
  * Props for DivisionChartsPage component
@@ -38,6 +39,9 @@ export function DivisionChartsPage({
 
   // State for selected date (default to current date and time)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  // Debounce selectedDate for chart updates (300ms delay)
+  const debouncedSelectedDate = useDebounce(selectedDate, 300);
 
   // State for storing calculated dasha periods
   const [selectedDatePeriods, setSelectedDatePeriods] = useState<SelectedDatePeriods | null>(null);
@@ -95,7 +99,7 @@ export function DivisionChartsPage({
       )}
 
       {/* Three Charts Grid Layout */}
-      <ChartCardList birthDetails={birthDetails} selectedDate={selectedDate} />
+      <ChartCardList birthDetails={birthDetails} selectedDate={debouncedSelectedDate} />
 
 
 

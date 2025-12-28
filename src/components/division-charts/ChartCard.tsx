@@ -93,7 +93,13 @@ export function ChartCard({
     } finally {
       setIsLoading(false);
     }
-  }, [birthDetails, chartType, title, selectedDate]);
+  }, [
+    birthDetails,
+    chartType,
+    title,
+    // Only include selectedDate for thathkala chart type
+    ...(chartType === 'thathkala' ? [selectedDate] : []),
+  ]);
 
   /**
    * Effect to fetch chart data when dependencies change
