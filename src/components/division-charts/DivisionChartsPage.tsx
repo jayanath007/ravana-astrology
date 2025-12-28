@@ -1,19 +1,14 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ChartCard } from "./ChartCard";
-import { useDivisionChart } from "@/hooks/useDivisionChart";
+import { ChartCardList } from "./ChartCardList";
 import { saveBirthDetails, loadBirthDetails } from "@/utils/sessionStorage";
-import type { PlanetSign, BirthDetails } from "@/types/birthChart";
+import type { BirthDetails } from "@/types/birthChart";
 
 /**
  * Props for DivisionChartsPage component
  */
 interface DivisionChartsPageProps {
   birthDetails?: BirthDetails;
-  rasiChartData?: {
-    zodiacNumber: number;
-    planetSigns: PlanetSign[];
-  };
 }
 
 /**
@@ -24,6 +19,7 @@ interface DivisionChartsPageProps {
  * - Navamsa Chart (D9): Divisional chart for spiritual analysis
  * - Thathkala (D3): Chart with birth ascendant and current time planets
  *
+ * Each ChartCard is self-contained and handles its own API calling and loading state.
  * Supports data from props, location state, or sessionStorage (in that priority order).
  * Implements accessibility features and error handling best practices.
  *
@@ -31,7 +27,6 @@ interface DivisionChartsPageProps {
  */
 export function DivisionChartsPage({
   birthDetails: propBirthDetails,
-  rasiChartData: propRasiData,
 }: DivisionChartsPageProps = {}) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -40,14 +35,6 @@ export function DivisionChartsPage({
   const savedDetails = loadBirthDetails();
   const birthDetails =
     propBirthDetails ?? location.state?.birthDetails ?? savedDetails;
-
-  const rasiZodiacNumber =
-    propRasiData?.zodiacNumber ??
-    (location.state?.zodiacNumber as number | undefined);
-
-  const rasiPlanetSigns =
-    propRasiData?.planetSigns ??
-    (location.state?.planetSigns as PlanetSign[] | undefined);
 
   // Save birth details to sessionStorage for persistence on refresh
   useEffect(() => {
@@ -58,28 +45,14 @@ export function DivisionChartsPage({
 
   // Redirect to home if no birth details available
   useEffect(() => {
-    if (!birthDetails && !rasiZodiacNumber) {
+    if (!birthDetails) {
       navigate("/", {
         state: {
           error: "Birth details required. Please enter your birth information.",
         },
       });
     }
-  }, [birthDetails, rasiZodiacNumber, navigate]);
-
-  // Fetch Navamsa chart data using custom hook
-  const navamsa = useDivisionChart({
-    birthDetails,
-    chartType: "navamsa",
-    enabled: !!birthDetails,
-  });
-
-  // Fetch Thathkala (D3) chart data using custom hook
-  const thathkala = useDivisionChart({
-    birthDetails,
-    chartType: "thathkala",
-    enabled: !!birthDetails,
-  });
+  }, [birthDetails, navigate]);
 
   return (
     <main
@@ -87,22 +60,6 @@ export function DivisionChartsPage({
       role="main"
       aria-label="Division Charts Page"
     >
-      {/* Screen reader announcement for loading states */}
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        className="sr-only"
-      >
-        {navamsa.isLoading || thathkala.isLoading
-          ? "Loading division charts..."
-          : "Division charts loaded"}
-      </div>
-
-      {/* Back Button */}
-      <div className="mb-6">
-      
-      </div>
 
       {/* Page Title */}
       <h1 className="text-2xl font-bold text-center mb-6 text-neutral-900 dark:text-neutral-100">
@@ -110,40 +67,7 @@ export function DivisionChartsPage({
       </h1>
 
       {/* Three Charts Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Chart 2 - Navamsa Chart (D9) */}
-        <ChartCard
-          title="නවංශකය"
-          zodiacNumber={navamsa.zodiacNumber}
-          planetSigns={navamsa.planetSigns}
-          isLoading={navamsa.isLoading}
-          error={navamsa.error}
-          onRetry={navamsa.retry}
-          ariaLabel="Navamsa divisional chart used for analyzing marriage, spiritual growth, and inner self"
-        />
-
-        {/* Chart 1 - Rasi Chart (D1) */}
-        <ChartCard
-          title="ලග්නය"
-          zodiacNumber={rasiZodiacNumber}
-          planetSigns={rasiPlanetSigns}
-          isLoading={false}
-          error={null}
-          ariaLabel="Rasi birth chart displaying ascendant and planetary positions at time of birth"
-        />
-
-        {/* Chart 3 - Thathkala (D3) */}
-        <ChartCard
-          title="ගෝචරය"
-          zodiacNumber={thathkala.zodiacNumber}
-          planetSigns={thathkala.planetSigns}
-          isLoading={thathkala.isLoading}
-          error={thathkala.error}
-          onRetry={thathkala.retry}
-          ariaLabel="Thathkala divisional chart showing birth ascendant with current time planetary positions"
-        />
-      </div>
+      <ChartCardList birthDetails={birthDetails} />
     </main>
   );
 }
