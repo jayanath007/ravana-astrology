@@ -144,12 +144,16 @@ export async function getNavamsaChartData(birthDetails: BirthDetails): Promise<D
  * Uses birth details for ascendant and current date/time for planet signs
  */
 export async function getThathkalaChartData(
-  birthDetails: BirthDetails
+  birthDetails: BirthDetails,
+  currentDateTime?: Date
 ): Promise<DivisionChartData> {
-  // Get current date and time
-  const now = new Date();
-  const currentDate = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-  const currentTime = now.toTimeString().slice(0, 5); // Format: HH:mm
+  // Use provided date or fall back to current date/time
+  const dateToUse = currentDateTime && !isNaN(currentDateTime.getTime())
+    ? currentDateTime
+    : new Date();
+
+  const currentDate = dateToUse.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+  const currentTime = dateToUse.toTimeString().slice(0, 5); // Format: HH:mm
 
   // Create request body with current date/time for planet signs
   const currentDateTimeRequest: BirthDetails = {

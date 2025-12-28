@@ -6,6 +6,7 @@ import type { BirthDetails } from '@/types/birthChart';
  */
 interface ChartCardListProps {
   birthDetails: BirthDetails | null;
+  selectedDate?: Date;
 }
 
 /**
@@ -21,7 +22,7 @@ interface ChartCardListProps {
  * @param props - Component props
  * @returns A grid layout with three chart cards
  */
-export function ChartCardList({ birthDetails }: ChartCardListProps) {
+export function ChartCardList({ birthDetails, selectedDate }: ChartCardListProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Chart 1 - Navamsa Chart (D9) */}
@@ -45,6 +46,7 @@ export function ChartCardList({ birthDetails }: ChartCardListProps) {
         title="ගෝචරය"
         chartType="thathkala"
         birthDetails={birthDetails}
+        selectedDate={selectedDate}
         ariaLabel="Thathkala divisional chart showing birth ascendant with current time planetary positions"
       />
     </div>

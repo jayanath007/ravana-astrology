@@ -22,6 +22,7 @@ interface ChartCardProps {
   chartType: ChartType;
   birthDetails: BirthDetails | null;
   ariaLabel: string;
+  selectedDate?: Date;
 }
 
 /**
@@ -44,6 +45,7 @@ export function ChartCard({
   chartType,
   birthDetails,
   ariaLabel,
+  selectedDate,
 }: ChartCardProps) {
   const [zodiacNumber, setZodiacNumber] = useState<number | undefined>(undefined);
   const [planetSigns, setPlanetSigns] = useState<PlanetSign[] | undefined>(undefined);
@@ -72,7 +74,7 @@ export function ChartCard({
           data = await getNavamsaChartData(birthDetails);
           break;
         case 'thathkala':
-          data = await getThathkalaChartData(birthDetails);
+          data = await getThathkalaChartData(birthDetails, selectedDate);
           break;
         default:
           throw new Error(`Unknown chart type: ${chartType}`);
@@ -91,7 +93,7 @@ export function ChartCard({
     } finally {
       setIsLoading(false);
     }
-  }, [birthDetails, chartType, title]);
+  }, [birthDetails, chartType, title, selectedDate]);
 
   /**
    * Effect to fetch chart data when dependencies change

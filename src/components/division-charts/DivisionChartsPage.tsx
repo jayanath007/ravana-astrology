@@ -95,7 +95,7 @@ export function DivisionChartsPage({
       )}
 
       {/* Three Charts Grid Layout */}
-      <ChartCardList birthDetails={birthDetails} />
+      <ChartCardList birthDetails={birthDetails} selectedDate={selectedDate} />
 
 
 
