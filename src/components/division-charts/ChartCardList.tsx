@@ -1,4 +1,6 @@
-import { ChartCard } from './ChartCard';
+import { RasiChart } from './RasiChart';
+import { NavamsaChart } from './NavamsaChart';
+import { ThathkalaChart } from './ThathkalaChart';
 import type { BirthDetails } from '@/types/birthChart';
 
 /**
@@ -26,29 +28,13 @@ export function ChartCardList({ birthDetails, selectedDate }: ChartCardListProps
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Chart 1 - Navamsa Chart (D9) */}
-      <ChartCard
-        title="නවංශකය"
-        chartType="navamsa"
-        birthDetails={birthDetails}
-        ariaLabel="Navamsa divisional chart used for analyzing marriage, spiritual growth, and inner self"
-      />
+      <NavamsaChart birthDetails={birthDetails} />
 
       {/* Chart 2 - Rasi Chart (D1) */}
-      <ChartCard
-        title="ලග්නය"
-        chartType="rasi"
-        birthDetails={birthDetails}
-        ariaLabel="Rasi birth chart displaying ascendant and planetary positions at time of birth"
-      />
+      <RasiChart birthDetails={birthDetails} />
 
       {/* Chart 3 - Thathkala (D3) */}
-      <ChartCard
-        title="ගෝචරය"
-        chartType="thathkala"
-        birthDetails={birthDetails}
-        selectedDate={selectedDate}
-        ariaLabel="Thathkala divisional chart showing birth ascendant with current time planetary positions"
-      />
+      <ThathkalaChart birthDetails={birthDetails} selectedDate={selectedDate} />
     </div>
   );
 }
