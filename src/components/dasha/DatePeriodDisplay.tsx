@@ -11,31 +11,37 @@ import type {
 } from "@/dashaApiIntegration/vimshottari-dasha.types";
 
 // Helper function to format date and time in Sinhala format
-const formatSinhalaDateTime = (date: Date, format: 'long' | 'short' = 'long'): string => {
+const formatSinhalaDateTime = (
+  date: Date,
+  format: "long" | "short" = "long"
+): string => {
   const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
   const hours = date.getHours();
-  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, "0");
 
   // Determine AM/PM in Sinhala
-  const period = hours >= 12 ? 'ප.ව.' : 'පෙ.ව.';
+  const period = hours >= 12 ? "ප.ව." : "පෙ.ව.";
 
   // Convert to 12-hour format
   const hours12 = hours % 12 || 12;
 
-  if (format === 'long') {
-    // Format: YYYY-MM-DD – ප.ව./පෙ.ව. hh:mm
-    return `${year}-${month}-${day} – ${period} ${hours12}:${minutes}`;
+  if (format === "long") {
+    // Format: YYYY-MM-DD, ප.ව./පෙ.ව. hh:mm
+    return `${year}-${month}-${day}, ${period} ${hours12}:${minutes}`;
   } else {
-    // Format: DD-MM-YYYY, ප.ව./පෙ.ව. hh:mm
-    return `${day}-${month}-${year}, ${period} ${hours12}:${minutes}`;
+    // Format: YYYY-MM-DD
+    return `${year}-${month}-${day}`;
   }
 };
 
 // Helper function to format date range in Sinhala
 const formatSinhalaDateRange = (startDate: Date, endDate: Date): string => {
-  return `${formatSinhalaDateTime(startDate, 'short')} - ${formatSinhalaDateTime(endDate, 'short')}`;
+  return `${  formatSinhalaDateTime(
+    startDate,
+    "short"
+  )} සිට ${formatSinhalaDateTime(endDate, "short")}`;
 };
 
 interface DatePeriodDisplayProps {
@@ -67,12 +73,19 @@ function DashaCard({
     <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg border border-neutral-300 dark:border-neutral-600 overflow-hidden">
       {/* Header with label and planet */}
       <div className="p-2 bg-white dark:bg-neutral-800">
-        <p className="text-1xl font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide mb-2">
-          {label}
-        </p>
-        <p >
-          <span className="text-3xl font-bold" style={{ color: color }}> {sinhalaName} </span>{" "}
-          <span className="text-sm"> {formatSinhalaDateRange(startDate, endDate)} </span>
+        <div className="flex justify-between items-center mb-2">
+          <p className="text-1xl font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
+            {label}
+          </p>
+          <span className="text-sm text-neutral-500 dark:text-neutral-400">
+            {formatSinhalaDateRange(startDate, endDate)}
+          </span>
+        </div>
+        <p>
+          <span className="text-3xl font-bold" style={{ color: color }}>
+            {" "}
+            {sinhalaName}{" "}
+          </span>{" "}
         </p>
       </div>
     </div>
@@ -93,10 +106,11 @@ export function DatePeriodDisplay({
     return (
       <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-6">
         <h2 className="text-xl font-bold mb-4 text-neutral-900 dark:text-neutral-100">
-          දශා කාල පරාසය සඳහා {formatSinhalaDateTime(selectedDate, 'short')}
+          දශා කාල පරාසය සඳහා {formatSinhalaDateTime(selectedDate, "long")}
         </h2>
         <p className="text-neutral-600 dark:text-neutral-400">
-          මෙම දිනය සඳහා දශා කාල පරාසය හමු නොවීය. දිනය ගණන් කළ පරාසයෙන් පිටත විය හැකිය.
+          මෙම දිනය සඳහා දශා කාල පරාසය හමු නොවීය. දිනය ගණන් කළ පරාසයෙන් පිටත විය
+          හැකිය.
         </p>
       </div>
     );
@@ -104,8 +118,6 @@ export function DatePeriodDisplay({
 
   return (
     <div>
- 
-
       {/* Flex layout for cards with separators */}
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2">
         {/* Mahadasha Card */}
@@ -215,8 +227,6 @@ export function DatePeriodDisplay({
           )}
         </div>
       </div>
-
- 
     </div>
   );
 }

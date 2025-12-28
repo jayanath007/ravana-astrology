@@ -38,11 +38,11 @@ const formatSinhalaDateTime = (date: Date, format: 'long' | 'short' = 'long'): s
   const hours12 = hours % 12 || 12;
 
   if (format === 'long') {
-    // Format: YYYY-MM-DD – ප.ව./පෙ.ව. hh:mm
-    return `${year}-${month}-${day} – ${period} ${hours12}:${minutes}`;
+    // Format: YYYY-MM-DD, ප.ව./පෙ.ව. hh:mm
+    return `${year}-${month}-${day}, ${period} ${hours12}:${minutes}`;
   } else {
-    // Format: DD-MM-YYYY, ප.ව./පෙ.ව. hh:mm
-    return `${day}-${month}-${year}, ${period} ${hours12}:${minutes}`;
+    // Format: YYYY-MM-DD
+    return `${year}-${month}-${day}`;
   }
 };
 
@@ -144,7 +144,7 @@ export function DashaTimelineControl({
 
               {/* Display periods for selected date */}
         {selectedDatePeriods && (
-          <div className="mt-6">
+          <div className="mb-3">
             <DatePeriodDisplay
               selectedDate={selectedDate}
               mahadasha={selectedDatePeriods.mahadasha}
@@ -161,8 +161,7 @@ export function DashaTimelineControl({
           {mahadashaPeriods.map((mahadasha, index) => {
             const startPercent = calculatePosition(mahadasha.startDateLocal);
             const endPercent =
-              index < mahadashaPeriods.length - 1
-                ? calculatePosition(mahadashaPeriods[index + 1].startDateLocal)
+              index < mahadashaPeriods.length - 1? calculatePosition(mahadashaPeriods[index + 1].startDateLocal)
                 : 100;
             const widthPercent = endPercent - startPercent;
             const color = getPlanetColor(mahadasha.planet as DashaPlanet);
@@ -197,7 +196,7 @@ export function DashaTimelineControl({
             const positionPercent = calculatePosition(mahadasha.startDateLocal);
             const color = getPlanetColor(mahadasha.planet as DashaPlanet);
             const planetNameSinhala = getPlanetNameSinhala(mahadasha.planet);
-            const formattedDateTime = formatSinhalaDateTime(mahadasha.startDateLocal, 'long');
+            const formattedDateTime = formatSinhalaDateTime(mahadasha.startDateLocal, 'short');
 
             return (
               <div
@@ -268,9 +267,18 @@ export function DashaTimelineControl({
               boxShadow: '0 0 8px rgba(147, 51, 234, 0.6), 0 2px 6px rgba(0,0,0,0.3)'
             }}
           >
-            {/* Date and Mahadasha Label Above Indicator */}
-            <div className="absolute -top-16 left-1/2 -translate-x-1/2 whitespace-nowrap">
-              <div className="bg-gradient-to-br from-purple-600 to-purple-700 text-white text-sm px-3 py-2 rounded-lg shadow-2xl border border-purple-400">
+            {/* Date and Mahadasha Label on Right-Bottom Side */}
+            <div className="absolute top-full mt-2 left-4 whitespace-nowrap">
+              <div className="bg-gradient-to-br from-gray-600 to-gray-700 text-white text-sm px-3 py-2 rounded-lg shadow-2xl border border-purple-400 relative">
+                {/* Arrow pointing up-left */}
+                <div
+                  className="absolute -top-2 left-2 w-0 h-0"
+                  style={{
+                    borderLeft: '6px solid transparent',
+                    borderRight: '6px solid transparent',
+                    borderBottom: '6px solid rgb(75, 85, 99)',
+                  }}
+                />
                 {activeMahadasha && (
                   <div
                     className="font-extrabold mb-0.5"
@@ -282,7 +290,7 @@ export function DashaTimelineControl({
                   </div>
                 )}
                 <div>
-                  {formatSinhalaDateTime(selectedDate, 'short')}
+                  {formatSinhalaDateTime(selectedDate, 'long')}
                 </div>
               </div>
             </div>
@@ -295,7 +303,7 @@ export function DashaTimelineControl({
           {/* First Mahadasha Start */}
           <div className="flex flex-col items-start">
             {mahadashaPeriods.length > 0 && (
-                <span className="text-neutral-800 dark:text-neutral-200 text-base">ආරම්භය   {formatSinhalaDate(mahadashaPeriods[0].startDateLocal)}</span>
+                <span className="text-neutral-800 dark:text-neutral-200 text-base">ආරම්භය   {formatSinhalaDateTime(mahadashaPeriods[0].startDateLocal, 'short')}</span>
             )}
           </div>
 
@@ -303,7 +311,7 @@ export function DashaTimelineControl({
           <div className="flex flex-col items-end">
             {mahadashaPeriods.length > 0 && (
                 <span className="text-neutral-800 dark:text-neutral-200 text-base">
-                  අවසානය {formatSinhalaDate(mahadashaPeriods[mahadashaPeriods.length - 1].endDateLocal)}
+                  අවසානය {formatSinhalaDateTime(mahadashaPeriods[mahadashaPeriods.length - 1].endDateLocal, 'short')}
                 </span>
             )}
           </div>
