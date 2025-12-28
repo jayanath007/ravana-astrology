@@ -1,7 +1,7 @@
-import { RasiChart } from './RasiChart';
-import { NavamsaChart } from './NavamsaChart';
-import { ThathkalaChart } from './ThathkalaChart';
-import type { BirthDetails } from '@/types/birthChart';
+import { RasiChart } from "./RasiChart";
+import { NavamsaChart } from "./NavamsaChart";
+import { ThathkalaChart } from "./ThathkalaChart";
+import type { BirthDetails } from "@/types/birthChart";
 
 /**
  * Props for ChartCardList component
@@ -24,17 +24,18 @@ interface ChartCardListProps {
  * @param props - Component props
  * @returns A grid layout with three chart cards
  */
-export function ChartCardList({ birthDetails, selectedDate }: ChartCardListProps) {
+export function ChartCardList({
+  birthDetails,
+  selectedDate,
+}: ChartCardListProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Chart 1 - Navamsa Chart (D9) */}
-      <NavamsaChart birthDetails={birthDetails} />
-
+      {/* Chart 1 - Thathkala (D3) */}
+      <ThathkalaChart birthDetails={birthDetails} selectedDate={selectedDate} />
       {/* Chart 2 - Rasi Chart (D1) */}
       <RasiChart birthDetails={birthDetails} />
-
-      {/* Chart 3 - Thathkala (D3) */}
-      <ThathkalaChart birthDetails={birthDetails} selectedDate={selectedDate} />
+      {/* Chart 3 - Navamsa Chart (D9) */}
+      <NavamsaChart birthDetails={birthDetails} />
     </div>
   );
 }

@@ -83,6 +83,17 @@ export function BirthDetailsForm() {
     });
   };
 
+  const handleThathkalaChart = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Navigate to Thathkala page with birth details
+    navigate('/thathkala', {
+      state: {
+        birthDetails: formData,
+      }
+    });
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -222,6 +233,15 @@ export function BirthDetailsForm() {
               className="px-4 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed text-white font-semibold rounded-md transition-colors"
             >
               {isLoading ? 'Loading...' : 'Calculate Dasha Periods'}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleThathkalaChart}
+              disabled={isLoading}
+              className="px-4 py-3 bg-orange-600 hover:bg-orange-700 disabled:bg-orange-400 disabled:cursor-not-allowed text-white font-semibold rounded-md transition-colors"
+            >
+              {isLoading ? 'Loading...' : 'View Thathkala Chart'}
             </button>
           </div>
         </form>
