@@ -391,3 +391,58 @@ export const PLANET_NAMES_SINHALA: Record<DashaPlanet, string> = {
 export function getPlanetNameSinhala(planet: string): string {
   return PLANET_NAMES_SINHALA[planet as DashaPlanet] || planet;
 }
+
+/**
+ * Format date and time in Sinhala format
+ * @param date - The date to format
+ * @param format - 'long' includes time with AM/PM, 'short' is date only
+ * @returns Formatted date string in Sinhala format
+ *
+ * Examples:
+ * - long: "2024-03-15, පෙ.ව. 10:30"
+ * - short: "2024-03-15"
+ */
+export function formatSinhalaDateTime(
+  date: Date,
+  format: 'long' | 'short' = 'long'
+): string {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const period = hours >= 12 ? 'ප.ව.' : 'පෙ.ව.';
+  const hours12 = hours % 12 || 12;
+
+  if (format === 'long') {
+    return `${year}-${month}-${day}, ${period} ${hours12}:${minutes}`;
+  } else {
+    return `${year}-${month}-${day}`;
+  }
+}
+
+/**
+ * Format only date (no time) in DD-MM-YYYY format
+ * @param date - The date to format
+ * @returns Formatted date string (DD-MM-YYYY)
+ *
+ * Example: "15-03-2024"
+ */
+export function formatSinhalaDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${day}-${month}-${year}`;
+}
+
+/**
+ * Format date range in Sinhala
+ * @param startDate - Range start date
+ * @param endDate - Range end date
+ * @returns Formatted range string with "සිට" (from) connector
+ *
+ * Example: "2024-03-15 සිට 2024-04-15"
+ */
+export function formatSinhalaDateRange(startDate: Date, endDate: Date): string {
+  return `${formatSinhalaDateTime(startDate, 'short')} සිට ${formatSinhalaDateTime(endDate, 'short')}`;
+}

@@ -1,6 +1,8 @@
 import {
   getPlanetColor,
   getPlanetNameSinhala,
+  formatSinhalaDateTime,
+  formatSinhalaDateRange,
 } from "@/dashaApiIntegration/vimshottari-dasha.utils";
 import type {
   ParsedMahadasha,
@@ -9,40 +11,6 @@ import type {
   ParsedSookshma,
   DashaPlanet,
 } from "@/dashaApiIntegration/vimshottari-dasha.types";
-
-// Helper function to format date and time in Sinhala format
-const formatSinhalaDateTime = (
-  date: Date,
-  format: "long" | "short" = "long"
-): string => {
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-  const hours = date.getHours();
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-
-  // Determine AM/PM in Sinhala
-  const period = hours >= 12 ? "ප.ව." : "පෙ.ව.";
-
-  // Convert to 12-hour format
-  const hours12 = hours % 12 || 12;
-
-  if (format === "long") {
-    // Format: YYYY-MM-DD, ප.ව./පෙ.ව. hh:mm
-    return `${year}-${month}-${day}, ${period} ${hours12}:${minutes}`;
-  } else {
-    // Format: YYYY-MM-DD
-    return `${year}-${month}-${day}`;
-  }
-};
-
-// Helper function to format date range in Sinhala
-const formatSinhalaDateRange = (startDate: Date, endDate: Date): string => {
-  return `${  formatSinhalaDateTime(
-    startDate,
-    "short"
-  )} සිට ${formatSinhalaDateTime(endDate, "short")}`;
-};
 
 interface DatePeriodDisplayProps {
   selectedDate: Date;
