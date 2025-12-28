@@ -31,6 +31,7 @@ export function TimelinePlayControls({
 
   return (
     <div className={cn('flex items-center justify-center gap-2', className)}>
+      <label htmlFor="timeline-datetime-picker" >පලාපල දිනය</label>
       <input
         id="timeline-datetime-picker"
         type="datetime-local"

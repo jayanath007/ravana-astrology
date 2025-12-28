@@ -196,7 +196,7 @@ export function DashaTimelineControl({
             const positionPercent = calculatePosition(mahadasha.startDateLocal);
             const color = getPlanetColor(mahadasha.planet as DashaPlanet);
             const planetNameSinhala = getPlanetNameSinhala(mahadasha.planet);
-            const formattedDateTime = formatSinhalaDateTime(mahadasha.startDateLocal, 'short');
+            const formattedDateTime = formatSinhalaDateTime(mahadasha.startDateLocal, 'long');
 
             return (
               <div
@@ -264,7 +264,7 @@ export function DashaTimelineControl({
             className="absolute top-0 h-full w-1 bg-gradient-to-b from-purple-500 to-purple-700 pointer-events-none z-20 shadow-lg"
             style={{
               left: `${currentPosition}%`,
-              boxShadow: '0 0 8px rgba(147, 51, 234, 0.6), 0 2px 6px rgba(0,0,0,0.3)'
+              boxShadow: '0 0 8px rgba(19, 143, 40, 0.6), 0 2px 6px rgba(0,0,0,0.3)'
             }}
           >
             {/* Date and Mahadasha Label on Right-Bottom Side */}
