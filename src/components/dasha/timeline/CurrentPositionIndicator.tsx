@@ -34,14 +34,14 @@ export function CurrentPositionIndicator({
     >
       {/* Date and Mahadasha Label on Right-Bottom Side */}
       <div className="absolute top-full mt-2 left-4 whitespace-nowrap">
-        <div className="bg-gradient-to-br from-gray-600 to-gray-700 text-white text-sm px-3 py-2 rounded-lg shadow-2xl border border-purple-400 relative">
+        <div className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-100 dark:to-gray-200 text-gray-900 dark:text-gray-950 text-sm px-3 py-2 rounded-lg shadow-2xl border border-purple-400 relative">
           {/* Arrow pointing up-left */}
           <div
             className="absolute -top-2 left-2 w-0 h-0"
             style={{
               borderLeft: "6px solid transparent",
               borderRight: "6px solid transparent",
-              borderBottom: "6px solid rgb(75, 85, 99)",
+              borderBottom: "6px solid rgb(255, 255, 255)",
             }}
           />
           {activeMahadasha && (
@@ -54,7 +54,7 @@ export function CurrentPositionIndicator({
               {getPlanetNameSinhala(activeMahadasha.planet)} මහදාශාව
             </div>
           )}
-          <div>{formatSinhalaDateTime(selectedDate, "long")}</div>
+          <div className="text-gray-800 dark:text-gray-950">{formatSinhalaDateTime(selectedDate, "long")}</div>
         </div>
       </div>
     </div>
