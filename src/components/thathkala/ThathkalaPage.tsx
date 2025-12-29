@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ThathkalaChart } from "@/components/division-charts/ThathkalaChart";
 import { PlanetSignChangesTable } from "@/components/division-charts/PlanetSignChangesTable";
+import { ThathkalaFilterControls } from "@/components/thathkala/ThathkalaFilterControls";
 import { saveBirthDetails, loadBirthDetails } from "@/utils/sessionStorage";
 import { TimelinePlayControls } from "@/components/dasha/TimelinePlayControls";
 import type { BirthDetails } from "@/types/birthChart";
@@ -39,6 +40,19 @@ export function ThathkalaPage({
 
   // State for selected date (default to current date and time)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  // State for filter controls
+  const [selectedZodiac, setSelectedZodiac] = useState<number>(1);
+  const [startDate, setStartDate] = useState<Date>(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    return date;
+  });
+  const [endDate, setEndDate] = useState<Date>(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 30);
+    return date;
+  });
 
   // Debounce selectedDate for chart updates (300ms delay)
   const debouncedSelectedDate = useDebounce(selectedDate, 300);
@@ -90,21 +104,31 @@ export function ThathkalaPage({
       </div>
 
 
-      {/* Two Column Layout - Table takes minimum space, Chart takes maximum */}
-      <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-4 mb-8">
-        {/* Left Column - Planet Sign Changes Table (Minimum Width) */}
-        <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-neutral-300 dark:border-neutral-700 lg:max-w-md">
-          <PlanetSignChangesTable
-            planetSigns={chartData.planetSigns}
-            isLoading={chartData.isLoading}
-          />
-        </div>
+      {/* Three Column Layout - Controls, Chart (Maximum), Table */}
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(200px,auto)_1fr_minmax(300px,400px)] gap-4 mb-8">
+        {/* Left Column - Filter Controls (Minimum Width) */}
+        <ThathkalaFilterControls
+          selectedZodiac={selectedZodiac}
+          startDate={startDate}
+          endDate={endDate}
+          onZodiacChange={setSelectedZodiac}
+          onStartDateChange={setStartDate}
+          onEndDateChange={setEndDate}
+        />
 
-        {/* Right Column - Thathkala Chart (Maximum Width) */}
+        {/* Middle Column - Thathkala Chart (Maximum Width - Priority) */}
         <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-neutral-300 dark:border-neutral-700">
           <ThathkalaChart
             birthDetails={birthDetails}
             selectedDate={debouncedSelectedDate}
+          />
+        </div>
+
+        {/* Right Column - Planet Sign Changes Table (Compact Width) */}
+        <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-neutral-300 dark:border-neutral-700 lg:max-w-md">
+          <PlanetSignChangesTable
+            planetSigns={chartData.planetSigns}
+            isLoading={chartData.isLoading}
           />
         </div>
       </div>
