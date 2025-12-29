@@ -68,7 +68,7 @@ export function PlanetSignChangesTable({
                   ග්‍රහයා
                 </th>
                 <th className="border border-neutral-300 dark:border-neutral-600 px-4 py-3 text-left font-semibold text-neutral-900 dark:text-neutral-100">
-                  ඊළඟ රාශි වෙනස
+                  ඊළඟ ග්‍රහ මාරුවීම් දිනය
                 </th>
               </tr>
             </thead>
