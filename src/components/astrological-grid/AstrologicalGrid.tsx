@@ -93,13 +93,13 @@ export function AstrologicalGrid({
   }, [planetSigns, offsetValue, initializeGrid]);
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-2">
       {showBackButton && (
-        <div className="mb-6">
+        <div className="mb-3">
         </div>
       )}
 
-      <div className="flex flex-col items-center justify-center gap-6">
+      <div className="flex flex-col items-center justify-center gap-2">
         {/* Grid */}
         <div className="w-full max-w-2xl">
           <svg

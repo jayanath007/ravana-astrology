@@ -3,8 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ThathkalaChart } from "@/components/division-charts/ThathkalaChart";
 import { PlanetSignChangesTable } from "@/components/division-charts/PlanetSignChangesTable";
 import { ThathkalaFilterControls } from "@/components/thathkala/ThathkalaFilterControls";
+import { ThathkalaTimeline } from "@/components/thathkala/ThathkalaTimeline";
 import { saveBirthDetails, loadBirthDetails } from "@/utils/sessionStorage";
-import { TimelinePlayControls } from "@/components/dasha/TimelinePlayControls";
 import type { BirthDetails } from "@/types/birthChart";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useChartData } from "@/hooks/useChartData";
@@ -44,9 +44,7 @@ export function ThathkalaPage({
   // State for filter controls
   const [selectedZodiac, setSelectedZodiac] = useState<number>(1);
   const [startDate, setStartDate] = useState<Date>(() => {
-    const date = new Date();
-    date.setDate(date.getDate() - 30);
-    return date;
+    return new Date();
   });
   const [endDate, setEndDate] = useState<Date>(() => {
     const date = new Date();
@@ -89,23 +87,12 @@ export function ThathkalaPage({
 
   return (
     <main
-      className="container mx-auto p-4 min-h-screen"
+      className="container mx-auto p-2 min-h-screen"
       role="main"
       aria-label="Thathkala Chart Page"
     >
-
-      {/* Timeline Duration and Controls */}
-      <div className="flex flex-col items-end justify-center mb-6">
-        <TimelinePlayControls
-          selectedDate={selectedDate}
-          onDateTimeChange={setSelectedDate}
-          className="mt-4"
-        />
-      </div>
-
-
       {/* Three Column Layout - Controls, Chart (Maximum), Table */}
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(200px,auto)_1fr_minmax(300px,400px)] gap-4 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(200px,auto)_1fr_minmax(300px,400px)] gap-2 mb-2">
         {/* Left Column - Filter Controls (Minimum Width) */}
         <ThathkalaFilterControls
           selectedZodiac={selectedZodiac}
@@ -131,6 +118,16 @@ export function ThathkalaPage({
             isLoading={chartData.isLoading}
           />
         </div>
+      </div>
+
+      {/* Timeline Controller - Full Width at Bottom */}
+      <div>
+        <ThathkalaTimeline
+          startDate={startDate}
+          endDate={endDate}
+          selectedDate={selectedDate}
+          onDateChange={setSelectedDate}
+        />
       </div>
     </main>
   );
