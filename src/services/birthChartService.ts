@@ -164,10 +164,10 @@ export async function getThathkalaChartData(
     timeZoneId: birthDetails.timeZoneId,
   };
 
-  // Fetch ascendant with birth details and planet signs with current date/time
+  // Fetch ascendant with birth details and planet signs with current date/time using the planet-sign-change endpoint
   const [zodiacNumber, planetSigns] = await Promise.all([
     getAscendant(birthDetails),
-    getPlanetSigns(currentDateTimeRequest),
+    fetchApi<PlanetSign[]>(API_ENDPOINTS.birthChart.planetSignChange, currentDateTimeRequest),
   ]);
 
   return {

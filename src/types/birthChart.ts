@@ -20,6 +20,8 @@ export interface BirthDetails {
 export interface PlanetSign {
   planet: string;
   sign: number;
+  nextSignChangeDate?: string;
+  lastSignChangeDate?: string;
 }
 
 /**

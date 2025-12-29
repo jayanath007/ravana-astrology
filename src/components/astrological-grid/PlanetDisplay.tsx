@@ -61,6 +61,7 @@ export function PlanetDisplay({
             x={position.x}
             y={position.y}
             enabled={enableTooltip}
+            planetData={planetData}
           >
             {/* Highlight background square for aspecting planet (orange) */}
             {isAspecting && (

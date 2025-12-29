@@ -146,7 +146,7 @@ export function GridArea({
           planetSigns={planetSigns}
           aspectingPlanets={aspectingPlanets}
           highlightedPlanet={highlightedPlanet}
-          enableTooltip={displayTitle === 'ලග්නය'}
+          enableTooltip={displayTitle === 'ලග්නය' || displayTitle === 'ගෝචරය'}
         />
       )}
     </g>
