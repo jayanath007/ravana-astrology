@@ -1,6 +1,7 @@
 import { ChartContainer } from './ChartContainer';
 import { useChartData } from '@/hooks/useChartData';
 import type { BirthDetails } from '@/types/birthChart';
+import { PlanetSignChangesTable } from './PlanetSignChangesTable';
 
 /**
  * Props for the ThathkalaChart component
@@ -53,14 +54,27 @@ export function ThathkalaChart({
   });
 
   return (
-    <ChartContainer
-      title={title}
-      ariaLabel={ariaLabel}
-      isLoading={chartData.isLoading}
-      error={chartData.error}
-      onRetry={chartData.retry}
-      zodiacNumber={chartData.zodiacNumber}
-      planetSigns={chartData.planetSigns}
-    />
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Left Column - Planet Sign Changes Table */}
+      <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-neutral-300 dark:border-neutral-700">
+        <PlanetSignChangesTable
+          planetSigns={chartData.planetSigns}
+          isLoading={chartData.isLoading}
+        />
+      </div>
+
+      {/* Right Column - Chart */}
+      <div>
+        <ChartContainer
+          title={title}
+          ariaLabel={ariaLabel}
+          isLoading={chartData.isLoading}
+          error={chartData.error}
+          onRetry={chartData.retry}
+          zodiacNumber={chartData.zodiacNumber}
+          planetSigns={chartData.planetSigns}
+        />
+      </div>
+    </div>
   );
 }
