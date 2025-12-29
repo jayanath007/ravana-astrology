@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ThathkalaChart } from "@/components/division-charts/ThathkalaChart";
+import { PlanetSignChangesTable } from "@/components/division-charts/PlanetSignChangesTable";
 import { saveBirthDetails, loadBirthDetails } from "@/utils/sessionStorage";
 import { TimelinePlayControls } from "@/components/dasha/TimelinePlayControls";
 import type { BirthDetails } from "@/types/birthChart";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useChartData } from "@/hooks/useChartData";
 
 /**
  * Props for ThathkalaPage component
@@ -46,6 +48,13 @@ export function ThathkalaPage({
   const birthDetails =
     propBirthDetails ?? location.state?.birthDetails ?? savedDetails;
 
+  // Fetch chart data for the table
+  const chartData = useChartData({
+    chartType: 'thathkala',
+    birthDetails,
+    selectedDate: debouncedSelectedDate,
+  });
+
   // Save birth details to sessionStorage for persistence on refresh
   useEffect(() => {
     if (birthDetails) {
@@ -81,12 +90,23 @@ export function ThathkalaPage({
       </div>
 
 
-      {/* Thathkala Chart - Full Width */}
-      <div className="mb-8">
-        <ThathkalaChart
-          birthDetails={birthDetails}
-          selectedDate={debouncedSelectedDate}
-        />
+      {/* Two Column Layout - Table takes minimum space, Chart takes maximum */}
+      <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-4 mb-8">
+        {/* Left Column - Planet Sign Changes Table (Minimum Width) */}
+        <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-neutral-300 dark:border-neutral-700 lg:max-w-md">
+          <PlanetSignChangesTable
+            planetSigns={chartData.planetSigns}
+            isLoading={chartData.isLoading}
+          />
+        </div>
+
+        {/* Right Column - Thathkala Chart (Maximum Width) */}
+        <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-neutral-300 dark:border-neutral-700">
+          <ThathkalaChart
+            birthDetails={birthDetails}
+            selectedDate={debouncedSelectedDate}
+          />
+        </div>
       </div>
     </main>
   );

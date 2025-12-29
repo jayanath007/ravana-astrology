@@ -53,10 +53,23 @@ export function PlanetSignChangesTable({
     );
   }
 
+  // Sort planets by nextSignChangeDate in ascending order
+  const sortedPlanetSigns = [...planetSigns].sort((a, b) => {
+    // Handle cases where nextSignChangeDate might be undefined
+    if (!a.nextSignChangeDate && !b.nextSignChangeDate) return 0;
+    if (!a.nextSignChangeDate) return 1; // Put undefined dates at the end
+    if (!b.nextSignChangeDate) return -1;
+
+    // Compare dates
+    const dateA = new Date(a.nextSignChangeDate);
+    const dateB = new Date(b.nextSignChangeDate);
+    return dateA.getTime() - dateB.getTime();
+  });
+
   return (
     <div className="w-full h-full overflow-auto">
       <div className="p-4">
-        <h2 className="text-2xl font-bold mb-4 text-neutral-900 dark:text-neutral-100">
+        <h2 className=" text-2xl font-bold mb-4 text-neutral-900 dark:text-neutral-100">
            ග්‍රහ මාරුවීම්
         </h2>
 
@@ -64,24 +77,24 @@ export function PlanetSignChangesTable({
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-neutral-200 dark:bg-neutral-700">
-                <th className="border border-neutral-300 dark:border-neutral-600 px-4 py-3 text-left font-semibold text-neutral-900 dark:text-neutral-100">
+                <th className="border border-neutral-300 dark:border-neutral-600 px-4 py-3  text-left font-semibold text-neutral-900 dark:text-neutral-100 whitespace-nowrap">
                   ග්‍රහයා
                 </th>
-                <th className="border border-neutral-300 dark:border-neutral-600 px-4 py-3 text-left font-semibold text-neutral-900 dark:text-neutral-100">
-                  ඊළඟ ග්‍රහ මාරුවීම් දිනය
+                <th className="border border-neutral-300 dark:border-neutral-600 px-4 py-3  text-left font-semibold text-neutral-900 dark:text-neutral-100 whitespace-nowrap">
+                  ඊළඟ ග්‍රහ මාරුව
                 </th>
               </tr>
             </thead>
             <tbody>
-              {planetSigns.map((planetSign, index) => (
+              {sortedPlanetSigns.map((planetSign, index) => (
                 <tr
                   key={`${planetSign.planet}-${index}`}
                   className="hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                 >
-                  <td className="border border-neutral-300 dark:border-neutral-600 px-4 py-3 text-neutral-900 dark:text-neutral-100 font-medium">
+                  <td className="border border-neutral-300 dark:border-neutral-600 px-4 py-3  text-neutral-900 dark:text-neutral-100 font-medium whitespace-nowrap">
                     {getPlanetSinhalaName(planetSign.planet)}
                   </td>
-                  <td className="border border-neutral-300 dark:border-neutral-600 px-4 py-3 text-neutral-900 dark:text-neutral-100 text-sm">
+                  <td className="border border-neutral-300 dark:border-neutral-600 px-4 py-3  text-neutral-900 dark:text-neutral-100 whitespace-nowrap">
                     {formatDateString(planetSign.nextSignChangeDate)}
                   </td>
                 </tr>
