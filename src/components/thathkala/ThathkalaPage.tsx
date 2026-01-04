@@ -4,6 +4,7 @@ import { ThathkalaChart } from "@/components/division-charts/ThathkalaChart";
 import { PlanetSignChangesTable } from "@/components/division-charts/PlanetSignChangesTable";
 import { ThathkalaFilterControls } from "@/components/thathkala/ThathkalaFilterControls";
 import { ThathkalaTimeline } from "@/components/thathkala/ThathkalaTimeline";
+import { AdaDawasa } from "@/components/thathkala/AdaDawasa";
 import { saveBirthDetails, loadBirthDetails } from "@/utils/sessionStorage";
 import type { BirthDetails } from "@/types/birthChart";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -38,18 +39,40 @@ export function ThathkalaPage({
   const location = useLocation();
   const navigate = useNavigate();
 
-  // State for selected date (default to current date and time)
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-
   // State for filter controls
   const [selectedZodiac, setSelectedZodiac] = useState<number>(1);
   const [startDate, setStartDate] = useState<Date>(() => {
-    return new Date();
+    const date = new Date();
+    // Set to first day of next month at midnight
+    date.setMonth(date.getMonth() + 1);
+    date.setDate(1);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  });
+
+  // State for selected date (default to first day of next month, same as startDate)
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+    const date = new Date();
+    // Set to first day of next month at midnight
+    date.setMonth(date.getMonth() + 1);
+    date.setDate(1);
+    date.setHours(0, 0, 0, 0);
+    return date;
   });
   const [endDate, setEndDate] = useState<Date>(() => {
-    const date = new Date();
-    date.setDate(date.getDate() + 30);
-    return date;
+    const now = new Date();
+    // Create a date for the first day of the month after next month
+    // Then set day to 0 to get the last day of next month
+    const lastDayOfNextMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 2, // Month after next month
+      0, // Day 0 = last day of previous month (which is next month)
+      23,
+      59,
+      59,
+      999
+    );
+    return lastDayOfNextMonth;
   });
 
   // Debounce selectedDate for chart updates (300ms delay)
@@ -93,21 +116,31 @@ export function ThathkalaPage({
     >
       {/* Three Column Layout - Controls, Chart (Maximum), Table */}
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(200px,auto)_1fr_minmax(300px,400px)] gap-2 mb-2">
-        {/* Left Column - Filter Controls (Minimum Width) */}
-        <ThathkalaFilterControls
-          selectedZodiac={selectedZodiac}
-          startDate={startDate}
-          endDate={endDate}
-          onZodiacChange={setSelectedZodiac}
-          onStartDateChange={setStartDate}
-          onEndDateChange={setEndDate}
-        />
+        {/* Left Column - Filter Controls and Date Picker */}
+        <div className="flex flex-col gap-2">
+          {/* Ada Dawasa Date/Time Picker */}
+          <AdaDawasa
+            selectedDate={selectedDate}
+            onDateChange={setSelectedDate}
+          />
+
+          {/* Filter Controls */}
+          <ThathkalaFilterControls
+            selectedZodiac={selectedZodiac}
+            startDate={startDate}
+            endDate={endDate}
+            onZodiacChange={setSelectedZodiac}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
+          />
+        </div>
 
         {/* Middle Column - Thathkala Chart (Maximum Width - Priority) */}
         <div className="bg-white dark:bg-neutral-900 rounded-lg shadow-lg border border-neutral-300 dark:border-neutral-700">
           <ThathkalaChart
             birthDetails={birthDetails}
             selectedDate={debouncedSelectedDate}
+            zodiacNumber={selectedZodiac}
           />
         </div>
 

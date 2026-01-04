@@ -4,7 +4,7 @@
  * Refactored to follow DRY principles and industry best practices
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, memo } from 'react';
 import type { AreaConfig } from './types';
 import { cn } from '@/lib/utils';
 import { getZodiacSignByAreaId } from './zodiac-config';
@@ -29,7 +29,7 @@ interface GridAreaProps {
   title?: string;
 }
 
-export function GridArea({
+function GridAreaComponent({
   config,
   letter,
   offsetValue,
@@ -152,3 +152,53 @@ export function GridArea({
     </g>
   );
 }
+
+/**
+ * Custom comparison function for React.memo
+ * Compares GridArea props to determine if re-render is needed
+ */
+function areGridAreaPropsEqual(
+  prevProps: GridAreaProps,
+  nextProps: GridAreaProps
+): boolean {
+  // Compare primitives
+  if (
+    prevProps.offsetValue !== nextProps.offsetValue ||
+    prevProps.isSelected !== nextProps.isSelected ||
+    prevProps.highlightedPlanet !== nextProps.highlightedPlanet ||
+    prevProps.title !== nextProps.title ||
+    prevProps.config.id !== nextProps.config.id
+  ) {
+    return false;
+  }
+
+  // Compare letter arrays (planets in this area)
+  if (prevProps.letter.length !== nextProps.letter.length) {
+    return false;
+  }
+  for (let i = 0; i < prevProps.letter.length; i++) {
+    if (prevProps.letter[i] !== nextProps.letter[i]) {
+      return false;
+    }
+  }
+
+  // Compare aspectingPlanets arrays
+  if (prevProps.aspectingPlanets?.length !== nextProps.aspectingPlanets?.length) {
+    return false;
+  }
+  if (prevProps.aspectingPlanets && nextProps.aspectingPlanets) {
+    for (let i = 0; i < prevProps.aspectingPlanets.length; i++) {
+      if (prevProps.aspectingPlanets[i] !== nextProps.aspectingPlanets[i]) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Memoized GridArea component
+ * Only re-renders when its specific props change
+ */
+export const GridArea = memo(GridAreaComponent, areGridAreaPropsEqual);

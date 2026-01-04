@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useGridState } from '@/hooks/useGridState';
 import { GRID_CONFIG } from './grid-config';
@@ -28,10 +28,13 @@ export function AstrologicalGrid({
   const zodiacNumber = propZodiacNumber ?? location.state?.zodiacNumber as number | undefined;
   const planetSigns = propPlanetSigns ?? location.state?.planetSigns as PlanetSign[] | undefined;
 
-  const { getLetter, initializeGrid } = useGridState();
+  const { getLetter, initializeGrid, updateGridSelectively } = useGridState();
   const [offsetValue] = useState(zodiacNumber || 1);
   const [selectedAreaId, setSelectedAreaId] = useState<number | null>(null);
   const [highlightedPlanet, setHighlightedPlanet] = useState<string | null>(null);
+
+  // Track previous offsetValue to detect when it changes
+  const prevOffsetRef = useRef(offsetValue);
 
   // Calculate Graha Drishti from planet signs
   const grahaDrishtiData = useMemo(() => {
@@ -43,15 +46,18 @@ export function AstrologicalGrid({
     return grahaDrishtiMapToObject(drishtiMap);
   }, [planetSigns]);
 
+  // Stable empty array for aspectingPlanets to prevent unnecessary re-renders
+  const EMPTY_ASPECTING_PLANETS: string[] = useMemo(() => [], []);
+
   // Get planets that aspect the selected area
   const aspectingPlanets = useMemo(() => {
     if (!selectedAreaId || !grahaDrishtiData) {
-      return [];
+      return EMPTY_ASPECTING_PLANETS;
     }
-    return grahaDrishtiData[selectedAreaId] || [];
-  }, [selectedAreaId, grahaDrishtiData]);
+    return grahaDrishtiData[selectedAreaId] || EMPTY_ASPECTING_PLANETS;
+  }, [selectedAreaId, grahaDrishtiData, EMPTY_ASPECTING_PLANETS]);
 
-  const handleAreaSelect = (areaId: number) => {
+  const handleAreaSelect = useCallback((areaId: number) => {
     // Toggle selection: if clicking the same area, deselect it
     const newSelectedAreaId = selectedAreaId === areaId ? null : areaId;
     setSelectedAreaId(newSelectedAreaId);
@@ -68,7 +74,7 @@ export function AstrologicalGrid({
       // Deselect: clear the highlighted planet
       setHighlightedPlanet(null);
     }
-  };
+  }, [selectedAreaId, offsetValue]);
 
   // Map planets to their corresponding areas when component mounts or when planetSigns/offsetValue changes
   useEffect(() => {
@@ -87,10 +93,18 @@ export function AstrologicalGrid({
         newGridState[areaId].push(planet);
       });
 
-      // Initialize the grid with all planets at once
-      initializeGrid(newGridState);
+      // If offsetValue changed, force full rebuild (all areas change)
+      // If only planets changed, use selective update (optimize)
+      if (prevOffsetRef.current !== offsetValue) {
+        initializeGrid(newGridState);
+        prevOffsetRef.current = offsetValue;
+      } else {
+        updateGridSelectively(newGridState);
+      }
+    } else {
+      updateGridSelectively({});
     }
-  }, [planetSigns, offsetValue, initializeGrid]);
+  }, [planetSigns, offsetValue, initializeGrid, updateGridSelectively]);
 
   return (
     <div className="container mx-auto p-2">

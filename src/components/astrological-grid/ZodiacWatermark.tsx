@@ -4,6 +4,7 @@
  * Eliminates duplication of SVG/image/symbol rendering
  */
 
+import { memo } from 'react';
 import type { ZodiacSign } from './zodiac-config';
 import {
   ZODIAC_ICON_SIZE,
@@ -22,7 +23,11 @@ interface ZodiacWatermarkProps {
   isCenter?: boolean;
 }
 
-export function ZodiacWatermark({
+/**
+ * Memoized ZodiacWatermark component
+ * Only re-renders when its props change
+ */
+export const ZodiacWatermark = memo(function ZodiacWatermark({
   zodiacSign,
   x,
   y,
@@ -115,4 +120,4 @@ export function ZodiacWatermark({
       </text>
     </>
   );
-}
+});

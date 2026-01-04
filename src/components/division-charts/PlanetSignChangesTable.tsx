@@ -5,7 +5,6 @@
 
 import type { PlanetSign } from '@/types/birthChart';
 import { getPlanetSinhalaName } from '@/utils/planet-names';
-import { getZodiacNameSinhala } from '@/utils/zodiac-names';
 import { formatSinhalaDateTime } from '@/dashaApiIntegration/vimshottari-dasha.utils';
 
 interface PlanetSignChangesTableProps {

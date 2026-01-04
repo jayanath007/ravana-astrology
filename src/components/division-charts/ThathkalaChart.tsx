@@ -1,3 +1,4 @@
+import { useRef, useEffect } from 'react';
 import { ChartContainer } from './ChartContainer';
 import { useChartData } from '@/hooks/useChartData';
 import type { BirthDetails } from '@/types/birthChart';
@@ -8,6 +9,7 @@ import type { BirthDetails } from '@/types/birthChart';
 interface ThathkalaChartProps {
   birthDetails: BirthDetails | null;
   selectedDate?: Date;
+  zodiacNumber?: number;
   title?: string;
   ariaLabel?: string;
 }
@@ -43,6 +45,7 @@ interface ThathkalaChartProps {
 export function ThathkalaChart({
   birthDetails,
   selectedDate,
+  zodiacNumber: propsZodiacNumber,
   title = 'ගෝචරය',
   ariaLabel = 'Thathkala divisional chart showing birth ascendant with current time planetary positions',
 }: ThathkalaChartProps) {
@@ -52,14 +55,30 @@ export function ThathkalaChart({
     selectedDate,
   });
 
+  // Track if we have loaded data at least once
+  // This prevents showing loading indicator on date changes
+  const hasLoadedOnce = useRef(false);
+
+  useEffect(() => {
+    if (chartData.planetSigns && chartData.planetSigns.length > 0) {
+      hasLoadedOnce.current = true;
+    }
+  }, [chartData.planetSigns]);
+
+  // Use provided zodiacNumber prop if available, otherwise use from chartData
+  const zodiacNumber = propsZodiacNumber ?? chartData.zodiacNumber;
+
+  // Only show loading on first load, not on date changes
+  const shouldShowLoading = chartData.isLoading && !hasLoadedOnce.current;
+
   return (
     <ChartContainer
       title={title}
       ariaLabel={ariaLabel}
-      isLoading={chartData.isLoading}
+      isLoading={shouldShowLoading}
       error={chartData.error}
       onRetry={chartData.retry}
-      zodiacNumber={chartData.zodiacNumber}
+      zodiacNumber={zodiacNumber}
       planetSigns={chartData.planetSigns}
     />
   );

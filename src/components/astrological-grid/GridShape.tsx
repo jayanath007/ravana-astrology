@@ -3,6 +3,7 @@
  * Renders triangle or rectangle shapes with consolidated event handling
  */
 
+import { memo } from 'react';
 import type { AreaConfig } from './types';
 
 interface GridShapeProps {
@@ -13,7 +14,11 @@ interface GridShapeProps {
   onClick: () => void;
 }
 
-export function GridShape({
+/**
+ * Memoized GridShape component
+ * Only re-renders when its props change
+ */
+export const GridShape = memo(function GridShape({
   config,
   shapeClasses,
   onMouseEnter,
@@ -46,4 +51,4 @@ export function GridShape({
       {...commonProps}
     />
   );
-}
+});
