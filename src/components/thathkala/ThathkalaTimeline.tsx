@@ -7,6 +7,7 @@ import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 import { useThathkalaTimeline } from '@/hooks/useThathkalaTimeline';
 import { formatSinhalaDateTime } from '@/dashaApiIntegration/vimshottari-dasha.utils';
+import { getPlanetSinhalaName } from '@/utils/planet-names';
 import type { PlanetaryMovementEvent } from '@/types/birthChart';
 
 interface ThathkalaTimelineProps {
@@ -116,28 +117,37 @@ export function ThathkalaTimeline({
                   return (
                     <div
                       key={`${event.planet}-${event.eventDateTime}-${index}`}
-                      className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 group"
+                      className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 group pointer-events-auto cursor-help p-2"
                       style={{ left: `${position}%` }}
                       title={`${event.planet}: ${event.fromSignName} → ${event.toSignName}`}
                     >
-                      {/* Event marker dot */}
-                      <div className="w-2 h-2 rounded-full bg-orange-500 dark:bg-orange-400 border border-orange-700 dark:border-orange-300 shadow-sm" />
+                      {/* Event marker - planet short name */}
+                      <div className="mx-auto text-xs font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 px-1.5 py-0.5 rounded border border-orange-300 dark:border-orange-600 shadow-sm group-hover:scale-125 group-hover:shadow-md group-hover:bg-orange-100 dark:group-hover:bg-orange-900/50 transition-all whitespace-nowrap">
+                        {event.planet}
+                      </div>
 
                       {/* Tooltip on hover */}
                       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                        <div className="bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
-                          <div className="font-bold">{event.planet}</div>
-                          <div>{event.fromSignName} → {event.toSignName}</div>
-                          <div className="text-neutral-300 dark:text-neutral-600">
-                            {formatSinhalaDateTime(new Date(event.eventDateTime), 'short')}
+                        <div className="relative bg-white dark:bg-white text-neutral-900 dark:text-neutral-900 text-xs px-3 py-2 rounded shadow-xl border border-neutral-200 dark:border-neutral-300 whitespace-nowrap">
+                          {/* Full planet name */}
+                          <div className="font-bold text-sm mb-1">
+                            {getPlanetSinhalaName(event.planet)}
+                          </div>
+                          {/* Sign change details */}
+                          <div className="text-sm mb-1">
+                            {event.fromSignName} → {event.toSignName} ග්‍රහ මාරුවීම
+                          </div>
+                          {/* Date and time */}
+                          <div className="text-xs text-neutral-600 dark:text-neutral-600">
+                            දිනය / වේලාව: {formatSinhalaDateTime(new Date(event.eventDateTime), 'long')}
                           </div>
                           {/* Arrow pointing down */}
                           <div
                             className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0"
                             style={{
-                              borderLeft: '4px solid transparent',
-                              borderRight: '4px solid transparent',
-                              borderTop: '4px solid rgb(23, 23, 23)', // neutral-900
+                              borderLeft: '5px solid transparent',
+                              borderRight: '5px solid transparent',
+                              borderTop: '5px solid rgb(255, 255, 255)', // white
                             }}
                           />
                         </div>
