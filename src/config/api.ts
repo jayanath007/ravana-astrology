@@ -19,6 +19,7 @@ export const API_ENDPOINTS = {
     planetSignChange: '/api/birthchart/planet-sign-changes',
     navamsaAscendant: '/api/birthchart/navamsa-ascendant',
     navamsaSigns: '/api/birthchart/navamsa-signs',
+    planetaryMovements: '/api/birthchart/planetary-movements',
   },
   dasha: {
     vimshottari: '/api/dasha/vimshottari',

@@ -6,9 +6,10 @@ import { ThathkalaFilterControls } from "@/components/thathkala/ThathkalaFilterC
 import { ThathkalaTimeline } from "@/components/thathkala/ThathkalaTimeline";
 import { AdaDawasa } from "@/components/thathkala/AdaDawasa";
 import { saveBirthDetails, loadBirthDetails } from "@/utils/sessionStorage";
-import type { BirthDetails } from "@/types/birthChart";
+import type { BirthDetails, PlanetaryMovementEvent } from "@/types/birthChart";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useChartData } from "@/hooks/useChartData";
+import { getPlanetaryMovements } from "@/services/birthChartService";
 
 /**
  * Props for ThathkalaPage component
@@ -90,6 +91,36 @@ export function ThathkalaPage({
     selectedDate: debouncedSelectedDate,
   });
 
+  // State for planetary movement events (timeline markers)
+  const [planetaryEvents, setPlanetaryEvents] = useState<PlanetaryMovementEvent[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
+
+  // Fetch planetary movements when startDate or endDate changes
+  useEffect(() => {
+    if (!birthDetails) return;
+
+    const fetchPlanetaryMovements = async () => {
+      setEventsLoading(true);
+      try {
+        const response = await getPlanetaryMovements({
+          startDateTime: startDate.toISOString(),
+          endDateTime: endDate.toISOString(),
+          latitude: birthDetails.latitude,
+          longitude: birthDetails.longitude,
+          timeZoneId: birthDetails.timeZoneId,
+        });
+        setPlanetaryEvents(response.events);
+      } catch (error) {
+        console.error('Failed to fetch planetary movements:', error);
+        setPlanetaryEvents([]);
+      } finally {
+        setEventsLoading(false);
+      }
+    };
+
+    void fetchPlanetaryMovements();
+  }, [startDate, endDate, birthDetails]);
+
   // Save birth details to sessionStorage for persistence on refresh
   useEffect(() => {
     if (birthDetails) {
@@ -160,6 +191,8 @@ export function ThathkalaPage({
           endDate={endDate}
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
+          planetaryEvents={planetaryEvents}
+          eventsLoading={eventsLoading}
         />
       </div>
     </main>

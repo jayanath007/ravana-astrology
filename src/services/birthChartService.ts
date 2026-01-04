@@ -10,6 +10,8 @@ import type {
   PlanetSign,
   BirthChartData,
   DivisionChartData,
+  PlanetaryMovementsRequest,
+  PlanetaryMovementsResponse,
 } from '@/types/birthChart';
 
 /**
@@ -174,4 +176,16 @@ export async function getThathkalaChartData(
     zodiacNumber,
     planetSigns,
   };
+}
+
+/**
+ * Fetches planetary movements (sign changes) for a date range
+ */
+export async function getPlanetaryMovements(
+  request: PlanetaryMovementsRequest
+): Promise<PlanetaryMovementsResponse> {
+  return await fetchApi<PlanetaryMovementsResponse>(
+    API_ENDPOINTS.birthChart.planetaryMovements,
+    request
+  );
 }

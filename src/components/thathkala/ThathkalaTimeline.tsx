@@ -7,12 +7,15 @@ import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 import { useThathkalaTimeline } from '@/hooks/useThathkalaTimeline';
 import { formatSinhalaDateTime } from '@/dashaApiIntegration/vimshottari-dasha.utils';
+import type { PlanetaryMovementEvent } from '@/types/birthChart';
 
 interface ThathkalaTimelineProps {
   startDate: Date;
   endDate: Date;
   selectedDate: Date;
   onDateChange: (date: Date) => void;
+  planetaryEvents?: PlanetaryMovementEvent[];
+  eventsLoading?: boolean;
   className?: string;
 }
 
@@ -31,6 +34,8 @@ export function ThathkalaTimeline({
   endDate,
   selectedDate,
   onDateChange,
+  planetaryEvents = [],
+  eventsLoading = false,
   className,
 }: ThathkalaTimelineProps) {
   const { currentPosition, sliderValueToDate, isValidRange } =
@@ -39,6 +44,14 @@ export function ThathkalaTimeline({
       endDate,
       selectedDate,
     });
+
+  // Calculate position for each planetary event on the timeline
+  const getEventPosition = (eventDateTime: string): number => {
+    const eventDate = new Date(eventDateTime);
+    const totalRange = endDate.getTime() - startDate.getTime();
+    const eventOffset = eventDate.getTime() - startDate.getTime();
+    return (eventOffset / totalRange) * 100;
+  };
 
   // Handle slider value changes
   const handleSliderChange = (values: number[]) => {
@@ -90,8 +103,51 @@ export function ThathkalaTimeline({
             </div>
           </div>
 
-          {/* Slider with custom styling */}
+          {/* Slider with custom styling and event markers */}
           <div className="relative px-2">
+            {/* Event markers layer (behind slider) */}
+            {!eventsLoading && planetaryEvents.length > 0 && (
+              <div className="absolute inset-0 pointer-events-none">
+                {planetaryEvents.map((event, index) => {
+                  const position = getEventPosition(event.eventDateTime);
+                  // Only show events within the visible range
+                  if (position < 0 || position > 100) return null;
+
+                  return (
+                    <div
+                      key={`${event.planet}-${event.eventDateTime}-${index}`}
+                      className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 group"
+                      style={{ left: `${position}%` }}
+                      title={`${event.planet}: ${event.fromSignName} → ${event.toSignName}`}
+                    >
+                      {/* Event marker dot */}
+                      <div className="w-2 h-2 rounded-full bg-orange-500 dark:bg-orange-400 border border-orange-700 dark:border-orange-300 shadow-sm" />
+
+                      {/* Tooltip on hover */}
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                        <div className="bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
+                          <div className="font-bold">{event.planet}</div>
+                          <div>{event.fromSignName} → {event.toSignName}</div>
+                          <div className="text-neutral-300 dark:text-neutral-600">
+                            {formatSinhalaDateTime(new Date(event.eventDateTime), 'short')}
+                          </div>
+                          {/* Arrow pointing down */}
+                          <div
+                            className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0"
+                            style={{
+                              borderLeft: '4px solid transparent',
+                              borderRight: '4px solid transparent',
+                              borderTop: '4px solid rgb(23, 23, 23)', // neutral-900
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
             <Slider
               value={[currentPosition]}
               onValueChange={handleSliderChange}

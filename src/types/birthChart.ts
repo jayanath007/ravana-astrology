@@ -46,3 +46,37 @@ export interface DivisionChartData {
   zodiacNumber: number;
   planetSigns: PlanetSign[];
 }
+
+/**
+ * Planetary movement event (sign change)
+ */
+export interface PlanetaryMovementEvent {
+  planet: string;
+  eventType: string;
+  eventDateTime: string;
+  fromSign: number;
+  toSign: number;
+  fromSignName: string;
+  toSignName: string;
+}
+
+/**
+ * Request body for planetary movements API
+ */
+export interface PlanetaryMovementsRequest {
+  startDateTime: string;
+  endDateTime: string;
+  latitude: number;
+  longitude: number;
+  timeZoneId: string;
+}
+
+/**
+ * Response from planetary movements API
+ */
+export interface PlanetaryMovementsResponse {
+  startDateTime: string;
+  endDateTime: string;
+  totalEvents: number;
+  events: PlanetaryMovementEvent[];
+}
